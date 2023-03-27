@@ -1,0 +1,67 @@
+{% extends "voting/base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.1.1/papaparse.min.js"></script>
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Camera</h3>
+                </div>
+                <div class="box-body">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe id="camera-feed" width="640" height="480"></iframe>
+                    </div>
+                </div>
+            </div>
+            <button id="open-camera-btn" type="button" class="btn btn-primary">Mở camera</button>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Danh sách đại biểu có mặt</h3>
+                </div>
+                <div class="box-body">
+                    <ul id="user-list">
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const openCameraBtn = document.getElementById('open-camera-btn');
+    const cameraFeedIframe = document.getElementById('camera-feed');
+    const attendeeListUl = document.getElementById('user-list');
+    
+    openCameraBtn.addEventListener('click', () => {
+        cameraFeedIframe.src = 'http://localhost:8080/camera_feed';
+        setInterval(() => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/voting/attendee_list/');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                const attendees = JSON.parse(xhr.responseText);
+
+                attendeeListUl.innerHTML = '';
+                for (let i = 0; i < attendees.length; i++) {
+                    const li = document.createElement('li');
+                    li.textContent = attendees[i];
+                    attendeeListUl.appendChild(li);
+                }
+            } else {
+                console.log('Không thể lấy danh sách đại biểu');
+            }
+        };
+        xhr.send();
+    }, 3000);
+    });
+    
+</script>
+
+{% endblock %}
