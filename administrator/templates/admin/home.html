@@ -3,10 +3,7 @@
 {% block content %}
 <!-- Main content -->
     <section class="content">
-            <!-- Small boxes (Stat box) -->
-      <div class="box-header with-border">
-        <a href="#reset" data-toggle="modal" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-refresh"></i> Đặt Lại</a>
-      </div>
+   
       <div class="row">
         <div class="col-lg-3 col-xs-6">
           <!-- small box -->
@@ -71,9 +68,17 @@
           <h3>Tổng kết
             <span class="pull-right">
               <a href="{% url 'printResult' %}" class="btn btn-success btn-sm btn-flat"><span class="glyphicon glyphicon-print"></span> Xuất file PDF <i class="fa fa-download"></i></a>
+              <span class="reset-btn-container">
+                <a href="#reset" data-toggle="modal" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-refresh"></i> Đặt Lại</a>
+              </span>
             </span>
+            
           </h3>
         </div>
+      <!-- Small boxes (Stat box) -->
+      <!-- <div class="box-header with-border">
+        <a href="#reset" data-toggle="modal" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-refresh"></i> Đặt Lại</a>
+      </div> -->
       </div>
 
      {% for position in positions %}

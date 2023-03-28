@@ -144,7 +144,7 @@ async def detect_food_return_base64_img(file: bytes = File(...)):
     #img_base64.save(bytes_io, format="jpeg")
     return Response(content=img_buffer.getvalue(), media_type="image/jpeg")
 
-file_path = '/../names.csv'
+file_path = '../names.csv'
 #hàm lưu tên khi đâu vào là anh người dùng
 def write_to_file(name):
     global file_path

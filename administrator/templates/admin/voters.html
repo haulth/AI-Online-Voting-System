@@ -1,34 +1,94 @@
 {% extends 'root.html' %}
 {% block content %}
 <section class="content">
+  <!-- thư viện hỗ trợ hiệu ứng load dữ liệu -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/1.2.5/spinkit.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
+
   <div class="row">
 <div class="col-xs-12">
 <div class="box">
-<div class="box-header with-border">
-  <a href="#addnew" data-toggle="modal" class="btn btn-success btn-sm btn-flat"><i
-          class="fa fa-plus"></i> Thêm Mới</a>
-</div>
-<!-- Delete all-->
-<div class="box-header with-border">
-  <a href="#" data-toggle="modal" class="btn btn-danger btn-sm btn-flat" onclick="event.preventDefault(); document.getElementById('delete-all-form').submit();">
-    <i class="fa fa-trash"></i> Xóa toàn bộ tài khoản
-  </a>
-  <form id="delete-all-form" action="{% url 'deleteAllVoters' %}" method="POST" style="display: none;">
-    {% csrf_token %}
-  </form>
-</div>
-<!--cập nhật tài khoản từ điểm danh-->
-<div class="box-header with-border">
-  <button onclick="createAcc()">Cập nhật tài khoản</button>
-</div>
-<script>
-function createAcc() {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', '{% url "updateAcc" %}', true);
-  xhr.send();
-  location.reload();
+  <div class="button-container">
+    <div class="box-header with-border" style="display: inline-block; float: left;">
+      <a href="#addnew" data-toggle="modal" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus"></i> Thêm mới</a>
+    </div>
+    <!--Thêm nhiều-->
+    <div class="box-header with-border">
+      <button class="btn btn-info btn-sm btn-flat" onclick="createAcc()"><i class="fa fa-plus"></i> Thêm nhiều</button>
+    </div>
+    <div class="box-header with-border">
+      <button class="btn btn-info btn-sm btn-flat" onclick="attendance()"><i class="fa fa-user-plus"></i>Điểm danh</button>
+    </div>
+    <!-- Xóa hết -->
+    <div class="box-header with-border" style="display: inline-block; float: left;">
+      <a href="#" data-toggle="modal" class="btn btn-danger btn-sm btn-flat" onclick="event.preventDefault(); document.getElementById('delete-all-form').submit();">
+        <i class="fa fa-trash"></i> Xóa hết
+      </a>
+      <form id="delete-all-form" action="{% url 'deleteAllVoters' %}" method="POST" style="display: none;">
+        {% csrf_token %}
+      </form>
+    </div>
+  
+  </div>
+
+<!-- Căn chỉnh các nút -->
+<style>
+  .button-container {
+  display: flex;
+  justify-content: flex-start;
 }
 
+  .btn-info {
+    color: #fff;
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+  }
+
+  .btn-info:hover,
+  .btn-info:focus,
+  .btn-info:active,
+  .btn-info.active,
+  .open .dropdown-toggle.btn-info {
+    color: #fff;
+    background-color: #117a8b;
+    border-color: #0f6674;
+  }
+
+  .btn-info i.fa {
+    margin-right: 5px;
+    display: inline-block;
+  }
+
+</style>
+
+
+<script>
+  //hàm điểm danh
+  function attendance() {
+    window.location.href = "http://localhost:8000/administrator/interface/";
+}
+
+// <!-- Hàm xử lý thêm nhiều tài khoản -->
+    function createAcc() {
+    // Tạo một spinner mới
+    var spinner = new Spinner().spin(document.body);
+    
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '{% url "updateAcc" %}', true);
+    xhr.onload = function() {
+      if (xhr.status == 200 && xhr.responseText == 'ok') {
+        
+        // Ẩn spinner loading
+        spinner.stop();
+        // Tải lại trang
+        setTimeout(function() {
+          location.reload();
+        }, 1000); // đợi 1 giây trước khi tải lại trang
+      } 
+    };
+    xhr.send();
+  }
 </script>
 
 <div class="box-body">

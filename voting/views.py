@@ -10,6 +10,7 @@ from django.http import JsonResponse
 # Create your views here.
 from datetime import datetime
 from django.shortcuts import render
+
 #Các thư viện cần thiết
 
 def index(request):
@@ -17,15 +18,6 @@ def index(request):
         return account_login(request)
     context = {}
     # return render(request, "voting/login.html", context)
-
-def interface(request):
-    return render(request, 'voting/voter/interface.html')
-
-
-
-def detecface(request):
-    return render(request, 'voting/voter/detec_face.html')
-
 
 def generate_ballot(display_controls=False):
     positions = Position.objects.order_by('priority').all()

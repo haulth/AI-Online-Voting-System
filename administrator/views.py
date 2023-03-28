@@ -11,14 +11,37 @@ import re
 from django_renderpdf.views import PDFView
 from django.shortcuts import render
 from datetime import datetime
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 import time
 from django.db import connection
-import os
+import os,csv,json
+
+
+def interface(request):
+    file_path = 'names.csv'
+    name_list = read_csv(file_path)
+    context = {'name_list': name_list}
+    return render(request, 'admin/interface.html',context)
+
+#hàm trả kết quả tên đại biểu có mặt
+def attendee_list(request):
+    file_path = 'names.csv'
+    name_list = read_csv(file_path)
+    return HttpResponse(json.dumps(name_list), content_type='application/json')
+#hàm đọc files csv có danh sách đại biểu kèm theo
+def read_csv(file_path):
+    with open(file_path, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        name_list = []
+        for row in reader:
+            name_list.append(row[0])
+    return name_list
 
 def updateAcc(request):
     os.system('python acc_rg.py')
-    return 'ok'
+    messages.success(request, 'Đăng ký tất cả các tài khoản thành công!')
+    return HttpResponse('ok')
+
 def save_vote_time(request):
     if request.method == 'POST':
         vote_time_str = request.POST.get('vote_time')

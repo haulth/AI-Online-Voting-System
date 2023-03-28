@@ -43,7 +43,7 @@
         cameraFeedIframe.src = 'http://localhost:8080/camera_feed';
         setInterval(() => {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', '/voting/attendee_list/');
+        xhr.open('GET', '/administrator/attendee_list/');
         xhr.onload = function () {
             if (xhr.status === 200) {
                 const attendees = JSON.parse(xhr.responseText);
