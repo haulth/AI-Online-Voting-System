@@ -29,9 +29,8 @@
         {% csrf_token %}
       </form>
     </div>
-  
-  </div>
-
+    
+  </div>  
 <!-- Căn chỉnh các nút -->
 <style>
   .button-container {
@@ -64,31 +63,57 @@
 
 
 <script>
-  //hàm điểm danh
-  function attendance() {
-    window.location.href = "http://localhost:8000/administrator/interface/";
+
+// chạy fast api
+function attendance() {
+  // Hàm hiển thị spinner
+  function showSpinner() {
+    var target = document.body;
+    var spinner = new Spinner().spin(target);
+    return spinner;
+  }
+
+  // Gửi yêu cầu ajax đến máy chủ
+  $.ajax({
+    url: '/administrator/run_uvicorn',
+    type: 'GET',
+    success: function() {
+      // Dừng spinner và chuyển trang mới
+      spinner.stop();
+      window.open("/administrator/interface", "_blank");
+    },
+    error: function() {
+      // Nếu có lỗi xảy ra, dừng spinner và hiển thị thông báo lỗi
+      spinner.stop();
+      alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
+    }
+  });
+
+  // Hiển thị spinner
+  var spinner = showSpinner();
 }
+
 
 // <!-- Hàm xử lý thêm nhiều tài khoản -->
     function createAcc() {
-    // Tạo một spinner mới
-    var spinner = new Spinner().spin(document.body);
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '{% url "updateAcc" %}', true);
-    xhr.onload = function() {
-      if (xhr.status == 200 && xhr.responseText == 'ok') {
-        
-        // Ẩn spinner loading
-        spinner.stop();
-        // Tải lại trang
-        setTimeout(function() {
-          location.reload();
-        }, 1000); // đợi 1 giây trước khi tải lại trang
-      } 
-    };
-    xhr.send();
-  }
+      // Tạo một spinner mới
+      var spinner = new Spinner().spin(document.body);
+      
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '{% url "updateAcc" %}', true);
+      xhr.onload = function() {
+        if (xhr.status == 200 && xhr.responseText == 'ok') {
+          
+          // Ẩn spinner loading
+          spinner.stop();
+          // Tải lại trang
+          setTimeout(function() {
+            location.reload();
+          }, 15000); // đợi 1 giây trước khi tải lại trang
+        } 
+      };
+      xhr.send();
+    }
 </script>
 
 <div class="box-body">

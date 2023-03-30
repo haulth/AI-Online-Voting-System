@@ -7,28 +7,63 @@ from voting.forms import *
 from django.contrib import messages
 from django.http import JsonResponse
 from django.conf import settings
-import re
+
 from django_renderpdf.views import PDFView
 from django.shortcuts import render
 from datetime import datetime
-from django.http import JsonResponse,HttpResponse
+from django.http import JsonResponse, HttpResponse
 import time
-from django.db import connection
-import os,csv,json
+import os
+import csv
+import json
+import subprocess
+import psutil
 
 
 def interface(request):
     file_path = 'names.csv'
     name_list = read_csv(file_path)
     context = {'name_list': name_list}
-    return render(request, 'admin/interface.html',context)
+    return render(request, 'admin/interface.html', context)
 
-#hàm trả kết quả tên đại biểu có mặt
+# hàm chạy fastapi
+
+
+def run_uvircorn(request):
+    # Đường dẫn tới thư mục model
+    model_dir = './model'
+    # Chạy lệnh uvicorn với thư mục model và cổng 8080
+    cmd = f"uvicorn main:app --reload --port 8080 --root-path {model_dir}"
+    subprocess.Popen(cmd, shell=True, cwd=model_dir)
+
+    # Hiển thị thông báo cho người dùng
+    messages.success(request, 'Khởi động Fast API thành công!')
+
+    # Chuyển hướng người dùng đến trang /administrator/interface/
+    return HttpResponse('Khởi động Fast API thành công!')
+
+# hàm dừng Fast API
+def stop_uvircorn(request):
+    os.chdir("./model")
+    os.system("taskkill /f /im uvicorn.exe")
+    # os.system("cls" if os.name == "nt" else "clear")
+    # os.system("exit")
+    # Hiển thị thông báo cho người dùng
+    messages.success(request, 'Dừng Fast API thành công!')
+    # Chuyển hướng người dùng đến trang /administrator/interface/
+    return HttpResponse('Dừng Fast API thành công!')
+
+# hàm trả kết quả tên đại biểu có mặt
+
+
 def attendee_list(request):
     file_path = 'names.csv'
     name_list = read_csv(file_path)
     return HttpResponse(json.dumps(name_list), content_type='application/json')
-#hàm đọc files csv có danh sách đại biểu kèm theo
+
+# hàm đọc files csv có danh sách đại biểu kèm theo
+
+
 def read_csv(file_path):
     with open(file_path, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -37,10 +72,12 @@ def read_csv(file_path):
             name_list.append(row[0])
     return name_list
 
+
 def updateAcc(request):
     os.system('python acc_rg.py')
     messages.success(request, 'Đăng ký tất cả các tài khoản thành công!')
     return HttpResponse('ok')
+
 
 def save_vote_time(request):
     if request.method == 'POST':
@@ -52,6 +89,7 @@ def save_vote_time(request):
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
+
 def delete_vote_time(request):
     if request.method == 'POST':
         # Xóa thông tin thời gian bầu cử trong file
@@ -61,6 +99,7 @@ def delete_vote_time(request):
     return JsonResponse({'success': False})
 
     # return render(request, "admin/infomation_votes.html",time_left_str)
+
 
 def find_n_winners(data, n):
     """Read More
@@ -81,13 +120,14 @@ def find_n_winners(data, n):
         candidate_data.remove(this_winner)
     return ", &nbsp;".join(final_list)
 
+
 class PrintView(PDFView):
     template_name = 'admin/print.html'
     prompt_download = True
 
     @property
     def download_name(self):
-        named_tuple = time.localtime() # lấy struct_time
+        named_tuple = time.localtime()  # lấy struct_time
         time_string = time.strftime("%d/%m/%Y", named_tuple)
         return "Ketqua_{}.pdf".format(time_string)
 
@@ -132,7 +172,8 @@ class PrintView(PDFView):
                         if count > 1:
                             winner = f"Có {count} đại biểu với {winner['votes']} phiếu bầu"
                         else:
-                            winner = "Người có số lượt cao nhất : " + winner['name']
+                            winner = "Người có số lượt cao nhất : " + \
+                                winner['name']
             print("Candidate Data For  ", str(
                 position.name), " = ", str(candidate_data))
             position_data[position.name] = {
@@ -141,10 +182,10 @@ class PrintView(PDFView):
         print(context)
         return context
 
-#thông tin về các vị trí và các ứng viên hiển thị lên bảng
+# thông tin về các vị trí và các ứng viên hiển thị lên bảng
 
 def infoVoter(request):
-    with open('vote_time.txt', 'r') as f:
+    with open('./vote_time.txt', 'r') as f:
         vote_time_str = f.read().strip()
     # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
     vote_time = datetime.fromisoformat(vote_time_str)
@@ -169,15 +210,18 @@ def infoVoter(request):
     for position in positions:
         if position.max_vote < 1:
             continue
-            
-        total_votes = Votes.objects.filter(candidate__position=position).count()
+
+        total_votes = Votes.objects.filter(
+            candidate__position=position).count()
         candidates_data = []
         for candidate in Candidate.objects.filter(position=position):
             votes = Votes.objects.filter(candidate=candidate).count()
             percent = (votes / total_votes) * 100 if total_votes > 0 else 0
-            candidates_data.append({'name': candidate.fullname, 'votes': votes, 'percent': percent})
+            candidates_data.append(
+                {'name': candidate.fullname, 'votes': votes, 'percent': percent})
 
-        chart_data[position] = {'candidates': candidates_data, 'pos_id': position.id}
+        chart_data[position] = {
+            'candidates': candidates_data, 'pos_id': position.id}
 
     context = {
         'time_left_str': time_left_str,
@@ -189,9 +233,6 @@ def infoVoter(request):
         'page_title': "Thống kê bầu cử"
     }
     return render(request, 'admin/infomation_votes.html', context)
-
-
-
 
 
 def dashboard(request):
@@ -298,7 +339,9 @@ def updateVoter(request):
 
     return redirect(reverse('adminViewVoters'))
 
-#hàm xóa
+# hàm xóa
+
+
 def deleteVoter(request):
     if request.method != 'POST':
         messages.error(request, "Truy cập bị từ chối")
@@ -312,11 +355,13 @@ def deleteVoter(request):
     return redirect(reverse('adminViewVoters'))
 
 # hàm xóa toàn bộ tài khoản
+
+
 def deleteAllVoters(request):
     if request.method != 'POST':
         messages.error(request, "Truy cập bị từ chối")
         return redirect(reverse('adminViewVoters'))
-    
+
     try:
         Votes.objects.all().delete()
         Voter.objects.all().delete()
@@ -326,11 +371,6 @@ def deleteAllVoters(request):
         messages.error(request, "Quyền truy cập vào tài nguyên này bị từ chối")
 
     return redirect(reverse('adminViewVoters'))
-
-
-
-
-
 
 
 def viewPositions(request):
@@ -387,12 +427,12 @@ def viewCandidates(request):
         'form1': form,
         'page_title': 'Đại biểu'
     }
-    
+
     if request.method == 'POST':
         if form.is_valid():
             form = form.save()
             messages.success(request, "Ứng viên mới được tạo")
-            
+
         else:
             messages.error(request, "Lỗi biểu mẫu")
     return render(request, "admin/candidates.html", context)

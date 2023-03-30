@@ -4,8 +4,19 @@
 
 <div class="container-fluid">
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.1.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
 
     <div class="row">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
         <div class="col-md-6 col-sm-12">
             <div class="box box-info">
                 <div class="box-header with-border">
@@ -18,6 +29,7 @@
                 </div>
             </div>
             <button id="open-camera-btn" type="button" class="btn btn-primary">Mở camera</button>
+            <button id="stop-camera-btn" type="button" class="btn btn-danger">Dừng</button>
         </div>
         <div class="col-md-6 col-sm-12">
             <div class="box box-info">
@@ -36,12 +48,48 @@
 
 <script>
     const openCameraBtn = document.getElementById('open-camera-btn');
+    const stopCameraBtn = document.getElementById('stop-camera-btn');
     const cameraFeedIframe = document.getElementById('camera-feed');
     const attendeeListUl = document.getElementById('user-list');
+
+    // ẩn thông báo sau 3s
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => alert.remove());
+    }, 3000);
+
+    // hàm dừng fastapi
+stopCameraBtn.addEventListener('click', () => {
+    // Tắt camera
+    cameraFeedIframe.src = '';
     
-    openCameraBtn.addEventListener('click', () => {
-        cameraFeedIframe.src = 'http://localhost:8080/camera_feed';
-        setInterval(() => {
+    
+    // Dừng fastapi
+    $.ajax({
+        url: '/administrator/stop_uvircorn',
+        type: 'GET',
+        
+        success: function(response) {
+            console.log(response);
+            location.reload(); 
+        },
+        error: function(error) {
+            console.log(error);
+        }
+        
+    });
+    // Xóa các đối tượng đã tạo khi mở camera
+    clearInterval(intervalId);
+    attendeeListUl.innerHTML = '';
+
+});
+
+let intervalId;
+
+openCameraBtn.addEventListener('click', () => {
+    cameraFeedIframe.src = 'http://localhost:8080/camera_feed';
+
+    // Cập nhật danh sách đại biểu mỗi 3 giây
+    intervalId = setInterval(() => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', '/administrator/attendee_list/');
         xhr.onload = function () {
@@ -58,10 +106,12 @@
                 console.log('Không thể lấy danh sách đại biểu');
             }
         };
+        xhr.onerror = function () {
+            alert('Kết nối bị ngắt. Dừng gửi yêu cầu tới server');
+            clearInterval(intervalId);
+        };
         xhr.send();
     }, 3000);
-    });
-    
+});  
 </script>
-
 {% endblock %}
