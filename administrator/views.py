@@ -11,23 +11,39 @@ from django.conf import settings
 from django_renderpdf.views import PDFView
 from django.shortcuts import render
 from datetime import datetime
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 import time
 import os
 import csv
 import json
 import subprocess
-import psutil
+from .utils import *
 
 
-def interface(request):
-    file_path = 'names.csv'
-    name_list = read_csv(file_path)
-    context = {'name_list': name_list}
-    return render(request, 'admin/interface.html', context)
+def identified(request):
+    try:
+        with Camera_feed_identified() as cam:
 
-# hàm chạy fastapi
-
+            gen = Gender_frame(cam)
+            if request.method == 'GET':
+                try:
+                    return StreamingHttpResponse(gen, content_type="multipart/x-mixed-replace;boundary=frame")
+                except:
+                    pass
+            elif request.method == 'POST':
+                if threading.active_count() > 0:
+                    cam.video.release()
+                    cam.stop()
+                    time.sleep(0.2)
+                    gen.close()
+                    messages.success(request, "Dừng thành công.")
+                    return HttpResponse("success")
+                else:
+                    messages.error(request, "Dừng không thành công.")
+                    return HttpResponse("fail")
+    except:
+        print("lỗi rồi")
+        return HttpResponse("lõ rồi")
 
 def run_uvircorn(request):
     # Đường dẫn tới thư mục model

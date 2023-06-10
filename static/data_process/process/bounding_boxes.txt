@@ -1,0 +1,5 @@
+C:/Users/Khoi Nguyen/Documents/GitHub/Emloyee_Record_Magament_System/static/data_process/process/87\flip_khoicm1.png
+C:/Users/Khoi Nguyen/Documents/GitHub/Emloyee_Record_Magament_System/static/data_process/process/87\rotate_khoicm1.png
+C:/Users/Khoi Nguyen/Documents/GitHub/Emloyee_Record_Magament_System/static/data_process/process/190501027\noise_h.png 85 39 256 247
+C:/Users/Khoi Nguyen/Documents/GitHub/Emloyee_Record_Magament_System/static/data_process/process/190501027\rotated_right_h.png 104 43 263 245
+C:/Users/Khoi Nguyen/Documents/GitHub/Emloyee_Record_Magament_System/static/data_process/process/190501027\rotated_left_h.png 71 50 245 242

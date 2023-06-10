@@ -1,117 +1,221 @@
 {% extends "voting/base.html" %}
 
 {% block content %}
-
-<div class="container-fluid">
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.1.1/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    .image-container {
+     display: flex;
+     align-items: flex-start;
+     justify-content: flex-start; /* Sửa thành flex-start */
+     height: 100%;
+   }
+   
     
-
-    <div class="row">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        
-        <div class="col-md-6 col-sm-12">
-            <div class="box box-info">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Camera</h3>
-                </div>
-                <div class="box-body">
-                    <div class="embed-responsive embed-responsive-16by9">
-                        <iframe id="camera-feed" width="640" height="480"></iframe>
-                    </div>
-                </div>
-            </div>
-            <button id="open-camera-btn" type="button" class="btn btn-primary">Mở camera</button>
-            <button id="stop-camera-btn" type="button" class="btn btn-danger">Dừng</button>
-        </div>
-        <div class="col-md-6 col-sm-12">
-            <div class="box box-info">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Danh sách đại biểu có mặt</h3>
-                </div>
-                <div class="box-body">
-                    <ul id="user-list">
-                        
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const openCameraBtn = document.getElementById('open-camera-btn');
-    const stopCameraBtn = document.getElementById('stop-camera-btn');
-    const cameraFeedIframe = document.getElementById('camera-feed');
-    const attendeeListUl = document.getElementById('user-list');
-
-    // ẩn thông báo sau 3s
-    setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(alert => alert.remove());
-    }, 3000);
-
-    // hàm dừng fastapi
-stopCameraBtn.addEventListener('click', () => {
-    // Tắt camera
-    cameraFeedIframe.src = '';
-    
-    
-    // Dừng fastapi
-    $.ajax({
-        url: '/administrator/stop_uvircorn',
-        type: 'GET',
-        
-        success: function(response) {
-            console.log(response);
-            location.reload(); 
-        },
-        error: function(error) {
-            console.log(error);
-        }
-        
-    });
-    // Xóa các đối tượng đã tạo khi mở camera
-    clearInterval(intervalId);
-    attendeeListUl.innerHTML = '';
-
-});
-
-let intervalId;
-
-openCameraBtn.addEventListener('click', () => {
-    cameraFeedIframe.src = 'http://localhost:8080/camera_feed';
-
-    // Cập nhật danh sách đại biểu mỗi 3 giây
-    intervalId = setInterval(() => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', '/administrator/attendee_list/');
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                const attendees = JSON.parse(xhr.responseText);
-
-                attendeeListUl.innerHTML = '';
-                for (let i = 0; i < attendees.length; i++) {
-                    const li = document.createElement('li');
-                    li.textContent = attendees[i];
-                    attendeeListUl.appendChild(li);
-                }
-            } else {
-                console.log('Không thể lấy danh sách đại biểu');
-            }
-        };
-        xhr.onerror = function () {
-            alert('Kết nối bị ngắt. Dừng gửi yêu cầu tới server');
-            clearInterval(intervalId);
-        };
-        xhr.send();
-    }, 3000);
-});  
-</script>
+     #camera-image {
+       width: 100%;
+       /* Đặt chiều rộng khung camera */
+       height: 500px;
+       /* Đặt chiều cao khung camera */
+       border: none;
+       /* Xóa đường viền khung camera */
+     }
+   
+     .bordered-image {
+       max-width: 100%;
+       max-height: 100%;
+     }
+   
+     .info-container {
+       width: 100%;
+       max-height: 300px;
+       padding: 10px;
+       border: 2px solid #000;
+       overflow-y: auto;
+     }
+   
+     .box {
+       border: 2px solid #000;
+       margin-bottom: 20px;
+     }
+   
+     .box-header {
+       background-color: #f4f4f4;
+       padding: 10px;
+     }
+   
+     .box-title {
+       margin: 0;
+     }
+   </style>
+   
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+   
+   {% csrf_token %}
+   <div class="container">
+     <div class="row">
+       <div class="col-md-6 col-sm-12">
+         <div class="card">
+           <div class="card-header">
+             <h3 class="card-title">Camera</h3>
+           </div>
+           <div class="card-body">
+             <div class="image-container">
+               <iframe id="camera-image" class="bordered-image" src="{% url 'identified' %}"></iframe>
+             </div>
+             
+           </div>
+           <div class="text-center mt-3">
+             <button id="btn" class="btn btn-danger">
+               <i class="fa fa-stop"></i> Stop
+             </button>
+           </div>
+         </div>
+       </div>
+   
+       <div class="col-md-6 col-sm-12">
+         <div class="box box-info">
+           <div class="box-header with-border">
+             <h6 class="box-title">Danh sách có mặt</h6>
+           </div>
+           <div class="box-body">
+             <ul id="user-list" class="list-group">
+             </ul>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+     document.addEventListener('DOMContentLoaded', function() {
+       const attendeeListUl = document.getElementById('user-list');
+       const successAttendees = []; // Danh sách các tên đã điểm danh thành công
+   
+       // Cập nhật danh sách đại biểu mỗi 3 giây
+       intervalId = setInterval(() => {
+         const xhr = new XMLHttpRequest();
+         xhr.open('GET', '/attendee_list/');
+         xhr.onload = function() {
+           if (xhr.status === 200) {
+             const attendees = JSON.parse(xhr.responseText);
+   
+             attendeeListUl.innerHTML = '';
+   
+             for (let i = 0; i < attendees.length; i++) {
+               const li = document.createElement('li');
+               li.textContent = attendees[i];
+               li.classList.add('list-group-item');
+               attendeeListUl.appendChild(li);
+   
+               // Kiểm tra xem tên đã điểm danh trước đó chưa
+               if (!successAttendees.includes(attendees[i])) {
+                 successAttendees.push(attendees[i]); // Thêm tên vào danh sách đã điểm danh thành công
+   
+                 // Hiển thị thông báo điểm danh thành công cho tên chưa điểm danh trước đó
+                 Swal.fire({
+                   icon: 'success',
+                   title: 'Điểm danh thành công',
+                   text: 'Điểm danh thành công: ' + attendees[i],
+                   showConfirmButton: false,
+                   timer: 1500 // Thời gian hiển thị thông báo (miligiay)
+                 });
+               }
+             }
+           } else {
+             console.log('Không thể lấy danh sách đại biểu');
+           }
+         };
+         xhr.onerror = function() {
+           alert('Kết nối bị ngắt. Dừng gửi yêu cầu tới server');
+           clearInterval(intervalId);
+         };
+         xhr.send();
+       }, 3000);
+     });
+   
+     // Lắng nghe sự kiện chuyển trang
+     window.addEventListener('beforeunload', function (e) {
+       // Hủy bỏ sự kiện mặc định
+       e.preventDefault();
+   
+       // Gửi yêu cầu POST đến trang /stop
+       var xhr = new XMLHttpRequest();
+       var csrftoken = getCookie('csrftoken');
+   
+       xhr.onreadystatechange = function () {
+         if (xhr.readyState === XMLHttpRequest.DONE) {
+           if (xhr.status === 200) {
+             // Xử lý khi nhận được phản hồi thành công
+             console.log(xhr.responseText);
+           } else {
+             // Xử lý khi có lỗi xảy ra
+             console.error('Có lỗi xảy ra: ' + xhr.status);
+           }
+         }
+       };
+   
+       xhr.open('POST', "{% url 'identified' %}", true);
+       xhr.setRequestHeader('X-CSRFToken', csrftoken);
+       xhr.send();
+     });
+   
+     document.getElementById('btn').addEventListener('click', function () {
+       var xhr = new XMLHttpRequest();
+       var csrftoken = getCookie('csrftoken');
+   
+       xhr.onreadystatechange = function () {
+         if (xhr.readyState === XMLHttpRequest.DONE) {
+           if (xhr.status === 200) {
+             // Xử lý khi nhận được phản hồi thành công
+             console.log(xhr.responseText);
+             showSuccessMessage();
+           } else {
+             // Xử lý khi có lỗi xảy ra
+             console.error('Có lỗi xảy ra: ' + xhr.status);
+             showErrorMessage();
+           }
+         }
+       };
+   
+       xhr.open('POST', "{% url 'identified' %}", true);
+       xhr.setRequestHeader('X-CSRFToken', csrftoken);
+       xhr.send();
+     });
+   
+     // Hàm hiển thị thông báo thành công
+     function showSuccessMessage() {
+       Swal.fire({
+         icon: 'success',
+         title: 'Stop thành công',
+         showConfirmButton: false,
+         timer: 1500 // Thời gian hiển thị thông báo (miligiay)
+       });
+     }
+   
+     // Hàm hiển thị thông báo lỗi
+     function showErrorMessage() {
+       Swal.fire({
+         icon: 'error',
+         title: 'Có lỗi xảy ra',
+         text: 'Đã xảy ra lỗi trong quá trình gửi yêu cầu',
+         confirmButtonColor: '#dc3545'
+       });
+     }
+   
+     // Helper function to retrieve the CSRF token from the cookie
+     function getCookie(name) {
+       var cookieValue = null;
+       if (document.cookie && document.cookie !== '') {
+         var cookies = document.cookie.split(';');
+         for (var i = 0; i < cookies.length; i++) {
+           var cookie = cookies[i].trim();
+           if (cookie.substring(0, name.length + 1) === (name + '=')) {
+             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+             break;
+           }
+         }
+       }
+       return cookieValue;
+     }
+   </script>
 {% endblock %}
