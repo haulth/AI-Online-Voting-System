@@ -17,8 +17,12 @@ import os
 import csv
 import json
 import subprocess
-from .utils import *
 
+from . utils import *
+
+def interface(request):
+
+    return render(request, 'admin/interface.html')
 
 def identified(request):
     try:

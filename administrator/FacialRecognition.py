@@ -33,7 +33,7 @@ class FakeDetector:
                                             detect_face_model_path=currentPythonFilePath+'/static/align'.replace('\\','/'),
                                             facenet_model_path=currentPythonFilePath+'/static/Models/20180402-114759.pb'.replace('\\','/')
                                         )
-        self.landmark_predictor = dlib.shape_predictor("Models/shape_predictor_68_face_landmarks.dat")
+        self.landmark_predictor = dlib.shape_predictor("./static/Models/shape_predictor_68_face_landmarks.dat")
 
     @staticmethod
     def rect_to_bb(rect):

@@ -39,6 +39,7 @@ urlpatterns = [
     path('delete_vote_time/', views.delete_vote_time, name='delete_vote_time'),
     path('infovoter/', views.infoVoter, name="infoVoter"),
     path('interface/', views.interface, name='interface'),
+    path('identified/', views.identified, name='identified'),
     path('attendee_list/', views.attendee_list, name='attendee_list'),
     path('run_uvicorn/',views.run_uvircorn, name='run_uvicorn'),
     path('stop_uvircorn/', views.stop_uvircorn, name='stop_uvircorn'),

@@ -10,7 +10,7 @@ from . import FacialRecognition
 from django.contrib import messages
 import subprocess
 from django.contrib.auth.models import User
-from employee.models import EmployeeDetail, Attendance
+from .models import EmployeeDetail, Attendance
 import threading
 from django.shortcuts import redirect
 import unidecode
