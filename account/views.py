@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 from .email_backend import EmailBackend
 from django.contrib import messages
@@ -5,6 +6,7 @@ from .forms import CustomUserForm
 from voting.forms import VoterForm
 from django.contrib.auth import login, logout
 
+import os
 # Create your views here.
 
 
@@ -32,7 +34,6 @@ def account_login(request):
 
     return render(request, "voting/login.html", context)
 
-
 def account_register(request):
     userForm = CustomUserForm(request.POST or None)
     voterForm = VoterForm(request.POST or None)
@@ -41,6 +42,7 @@ def account_register(request):
         'form1': userForm,
         'form2': voterForm
     }
+    
     if request.method == 'POST':
         if userForm.is_valid() and voterForm.is_valid():
             user = userForm.save(commit=False)
@@ -48,13 +50,38 @@ def account_register(request):
             voter.admin = user
             user.save()
             voter.save()
-            messages.success(request, "Tài khoản đã được tạo. Bạn có thể đăng nhập ngay bây giờ!")
-            return redirect(reverse('account_login'))
+            user_id = user.id
+            context['user_id'] = user_id  # Thêm user_id vào context
+            
+            return JsonResponse({'success': True, 'user_id': user_id})
         else:
-            messages.error(request, "Xác thực dữ liệu được cung cấp không thành công")
-            # return account_login(request)
-    return render(request, "voting/reg.html", context)
+            return JsonResponse({'success': False, 'errors': userForm.errors})
+    
+    return render(request, "ad_reg.html", context)
 
+def create_folder(request):
+    folder_name = request.GET.get('name')
+    folder_path = os.path.join('./static/data/', folder_name)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        return render(request, 'upload.html', {'folder_name': folder_name})
+    else:
+        messages.error(request, 'Có lỗi xảy ra khi tạo thư mục')
+        return JsonResponse({'message': 'Có lỗi xảy ra khi tạo thư mục'})
+
+def upload_images(request):
+    folder_name = request.session.get('folder_name')
+    if request.method == 'POST':
+        folder_name = request.POST.get('folder_name')
+        folder_path = os.path.join('./static/data/', folder_name)
+        # Lưu hình ảnh vào thư mục
+        for i in range(10):
+            image_file = request.FILES.get(f'image_{i+1}')
+            if image_file:
+                with open(os.path.join(folder_path, image_file.name), 'wb') as f:
+                    f.write(image_file.read())
+    messages.success(request,'Đăng ký tài khoản thành công')
+    return redirect('account_register')
 
 def account_logout(request):
     user = request.user

@@ -44,5 +44,4 @@ urlpatterns = [
     path('run_uvicorn/',views.run_uvircorn, name='run_uvicorn'),
     path('stop_uvircorn/', views.stop_uvircorn, name='stop_uvircorn'),
     
-
 ]

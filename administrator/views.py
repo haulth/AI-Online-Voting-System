@@ -1,5 +1,6 @@
 
 from django.shortcuts import render, reverse, redirect
+from voting.forms import CandidateForm, PositionForm, VoterForm
 from voting.models import Voter, Position, Candidate, Votes
 from account.models import CustomUser
 from account.forms import CustomUserForm
@@ -23,6 +24,8 @@ from . utils import *
 def interface(request):
 
     return render(request, 'admin/interface.html')
+
+
 
 def identified(request):
     try:

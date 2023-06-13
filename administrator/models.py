@@ -1,8 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, UserManager
-from account.models import CustomUser
-from django.contrib.auth.models import User
 from django.conf import settings
+
 class EmployeeDetail(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     emcode=models.CharField(max_length=50)
@@ -24,3 +22,4 @@ class Attendance(models.Model):
     #hàm xóa toàn bộ dữ liệu trong bảng
     def delete_all(self):
         Attendance.objects.all().delete()
+

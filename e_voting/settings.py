@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'voting.context_processors.ElectionTitle'
             ],
+            
         },
     },
 ]
