@@ -9,6 +9,9 @@ from django.contrib.auth import login, logout
 import os
 # Create your views here.
 
+def ad_train(request):
+
+    return render(request, 'ad_train.html')
 
 def account_login(request):
     

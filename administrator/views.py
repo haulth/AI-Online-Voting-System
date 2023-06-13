@@ -25,7 +25,19 @@ def interface(request):
 
     return render(request, 'admin/interface.html')
 
+def timetrain(request):
+   # Đọc nội dung từ file txt
+    train_datetimes = []
+    with open('time.txt', 'r', encoding='utf-8') as file:
+        train_datetimes = file.readlines()
 
+    # Xóa ký tự xuống dòng ở cuối mỗi dòng
+    train_datetimes = [
+        datetime.strip() + '<br>' for datetime in train_datetimes]
+
+    # Gửi train_datetimes đến template dưới dạng JSON
+    data = {'train_datetimes': train_datetimes}
+    return JsonResponse(data)
 
 def identified(request):
     try:

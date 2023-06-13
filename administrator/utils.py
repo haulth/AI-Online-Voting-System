@@ -274,14 +274,14 @@ def train(request):
     currentPythonFilePath = os.getcwd().replace('\\','/')
     print('Current Python File Path: ', currentPythonFilePath)
     print('data augmentation')
-    cmdAug= 'python "{}"/facerecognition/Data_Augmentation.py'.format(currentPythonFilePath)
+    cmdAug= 'python "{}"/administrator/Data_Augmentation.py'.format(currentPythonFilePath)
 
     resultAug = subprocess.run(cmdAug, stdout=subprocess.PIPE, shell=True)
 
     print(resultAug.stdout)
     print('align dataset')
     
-    cmdAlign = 'python "{}"/facerecognition/align_dataset_mtcnn.py "{}"/static/data_process/raw/ "{}"/static/data_process/process/ "{}"/static/align --image_size 160 --margin 32 --random_order --gpu_memory_fraction 0.25'.format(currentPythonFilePath, currentPythonFilePath, currentPythonFilePath, currentPythonFilePath)
+    cmdAlign = 'python "{}"/administrator/align_dataset_mtcnn.py "{}"/static/data_process/raw/ "{}"/static/data_process/process/ "{}"/static/align --image_size 160 --margin 32 --random_order --gpu_memory_fraction 0.25'.format(currentPythonFilePath, currentPythonFilePath, currentPythonFilePath, currentPythonFilePath)
 
     resultAlign = subprocess.run(cmdAlign, stdout=subprocess.PIPE, shell=True)
 
@@ -289,7 +289,7 @@ def train(request):
 
     print('train classifier')
 
-    cmdClass = 'python "{}"/facerecognition/classifier.py TRAIN "{}"/static/data_process/process "{}"/static/Models/20180402-114759.pb "{}"/static/Models/facemodel.pkl --batch_size 1000'.format(currentPythonFilePath, currentPythonFilePath, currentPythonFilePath, currentPythonFilePath)
+    cmdClass = 'python "{}"/administrator/classifier.py TRAIN "{}"/static/data_process/process "{}"/static/Models/20180402-114759.pb "{}"/static/Models/facemodel.pkl --batch_size 1000'.format(currentPythonFilePath, currentPythonFilePath, currentPythonFilePath, currentPythonFilePath)
 
     resultClass = subprocess.run(cmdClass, stdout=subprocess.PIPE, shell=True)
 
