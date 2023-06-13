@@ -267,7 +267,7 @@ def face_detection(request):
             break
     cap.release()
     cv2.destroyAllWindows()
-    messages.success(request, 'Có dữ liệu mới được thêm vào.')
+    messages.success(request, 'Đăng ký tài khoản thành công.')
     return HttpResponse('success')
 
 def train(request):

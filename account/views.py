@@ -64,24 +64,24 @@ def create_folder(request):
     folder_path = os.path.join('./static/data/', folder_name)
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
-        return render(request, 'upload.html', {'folder_name': folder_name})
-    else:
-        messages.error(request, 'Có lỗi xảy ra khi tạo thư mục')
-        return JsonResponse({'message': 'Có lỗi xảy ra khi tạo thư mục'})
-
+        print(folder_name)
+    return render(request, 'upload.html',{'folder_name': folder_name})
+    
 def upload_images(request):
-    folder_name = request.session.get('folder_name')
     if request.method == 'POST':
         folder_name = request.POST.get('folder_name')
         folder_path = os.path.join('./static/data/', folder_name)
+        
         # Lưu hình ảnh vào thư mục
-        for i in range(10):
-            image_file = request.FILES.get(f'image_{i+1}')
-            if image_file:
-                with open(os.path.join(folder_path, image_file.name), 'wb') as f:
-                    f.write(image_file.read())
-    messages.success(request,'Đăng ký tài khoản thành công')
-    return redirect('account_register')
+        images = request.FILES.getlist('images[]')
+        for i, image_file in enumerate(images):
+            with open(os.path.join(folder_path, image_file.name), 'wb') as f:
+                f.write(image_file.read())
+        
+        messages.success(request, 'Đăng ký tài khoản thành công.')
+        return redirect('account_register')
+
+
 
 def account_logout(request):
     user = request.user

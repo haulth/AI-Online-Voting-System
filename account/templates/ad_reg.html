@@ -26,7 +26,7 @@
             {% endfor %}
 
             <p id="empcode" name="empcode" data-user-id="{{ user_id }}"></p>
-          
+
             <div class="row">
               <div class="col-md-3 mb-2">
                 <button type="submit" class="btn btn-primary btn-block" name="login"><i class="fa fa-user-plus"></i>
@@ -63,28 +63,31 @@
 
   function uploadImage() {
     const url = `/create_folder/?name=${user_id}`;
-
     fetch(url)
       .then(response => {
         if (response.ok) {
-          return response.json();
+
+          return response.text();
+
         } else {
-          throw new Error('Có lỗi xảy ra!');
+          // throw new Error('Có lỗi xảy ra!');
         }
       })
       .then(data => {
-
+        
         document.body.innerHTML = data;
 
       })
       .catch(error => {
         console.error('Lỗi:', error);
+        // alert('Có lỗi xảy ra!');
       });
   }
 
+
   function camera() {
-  
-    const url = `/demorecognition/face_detection/?name=${user_id}`;
+
+    const url = `/face_detection/?name=${user_id}`;
 
     fetch(url)
       .then(response => {

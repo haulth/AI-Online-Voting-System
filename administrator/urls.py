@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('', views.dashboard, name="adminDashboard"),
     # * Voters
@@ -43,5 +42,6 @@ urlpatterns = [
     path('attendee_list/', views.attendee_list, name='attendee_list'),
     path('run_uvicorn/',views.run_uvircorn, name='run_uvicorn'),
     path('stop_uvircorn/', views.stop_uvircorn, name='stop_uvircorn'),
+    path('face_detection/', views.face_detection, name='face_detection'),
     
 ]

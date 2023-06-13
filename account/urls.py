@@ -1,11 +1,12 @@
 from django.urls import path
-from . import views
-
+from .views import *
+from administrator import views
 
 urlpatterns = [
-    path('', views.account_login, name="account_login"),
-    path('register/', views.account_register, name="account_register"),
-    path('logout/', views.account_logout, name="account_logout"),
-    path('upload_images/', views.upload_images, name="upload_images"),
-    path('create_folder/', views.create_folder, name='create_folder')
+    path('', account_login, name="account_login"),
+    path('register/', account_register, name="account_register"),
+    path('logout/', account_logout, name="account_logout"),
+    path('upload_images/', upload_images, name="upload_images"),
+    path('create_folder/', create_folder, name='create_folder'),
+    path('face_detection/', views.face_detection, name='face_detection')
 ]
