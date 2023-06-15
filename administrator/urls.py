@@ -43,5 +43,7 @@ urlpatterns = [
     path('run_uvicorn/',views.run_uvircorn, name='run_uvicorn'),
     path('stop_uvircorn/', views.stop_uvircorn, name='stop_uvircorn'),
     path('face_detection/', views.face_detection, name='face_detection'),
-    
+    path('ad_train/', views.ad_train, name='ad_train'),
+    path('train/', views.train, name='train'),
+    path('timetrain/', views.timetrain, name='timetrain'),
 ]

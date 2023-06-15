@@ -10,7 +10,7 @@
 <div class="col-xs-12">
 <div class="box">
   <div class="button-container">
-    <div class="box-header with-border" style="display: inline-block; float: left;">
+    {% comment %} <div class="box-header with-border" style="display: inline-block; float: left;">
       <a href="#addnew" data-toggle="modal" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus"></i> Thêm mới</a>
     </div>
     <!--Thêm nhiều-->
@@ -19,7 +19,7 @@
     </div>
     <div class="box-header with-border">
       <button class="btn btn-info btn-sm btn-flat" onclick="attendance()"><i class="fa fa-user-plus"></i>Điểm danh</button>
-    </div>
+    </div> {% endcomment %}
     <!-- Xóa hết -->
     <div class="box-header with-border" style="display: inline-block; float: left;">
       <a href="#" data-toggle="modal" class="btn btn-danger btn-sm btn-flat" onclick="event.preventDefault(); document.getElementById('delete-all-form').submit();">

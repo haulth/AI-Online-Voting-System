@@ -10,7 +10,4 @@ urlpatterns = [
     path('create_folder/', create_folder, name='create_folder'),
     path('ad_train/', ad_train, name='ad_train'),
     path('face_detection/', views.face_detection, name='face_detection'),
-    path('train/', views.train, name='train'),
-    path('timetrain/', views.timetrain, name='timetrain'),
-
 ]

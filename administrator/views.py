@@ -21,6 +21,10 @@ import subprocess
 
 from . utils import *
 
+
+def ad_train(request):
+
+    return render(request, 'admin/ad_train.html')
 def interface(request):
 
     return render(request, 'admin/interface.html')
