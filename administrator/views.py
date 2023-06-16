@@ -43,9 +43,27 @@ def timetrain(request):
     data = {'train_datetimes': train_datetimes}
     return JsonResponse(data)
 
+def get_camera_index():
+    # Kiểm tra số lượng camera được kết nối trong hệ thống
+    num_cameras = 0
+    for i in range(10):
+        cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
+        if cap.isOpened():
+            num_cameras += 1
+            cap.release()
+        else:
+            break
+    
+    # Xác định tham số camera dựa trên số lượng camera kết nối
+    if num_cameras > 1:
+        return 1  # Nếu có nhiều hơn 1 camera, chọn tham số 1
+    else:
+        return 0  # Nếu chỉ có 1 camera, chọn tham số 0
+    
 def identified(request):
     try:
-        with Camera_feed_identified() as cam:
+        camera_index = get_camera_index()
+        with Camera_feed_identified(camera_index) as cam:
 
             gen = Gender_frame(cam)
             if request.method == 'GET':

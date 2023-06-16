@@ -310,11 +310,12 @@ def train(request):
     messages.success(request, 'Train dữ liệu thành công.')
     return HttpResponse('ok luon')
 
+# The class Camera_feed_identified initializes a video feed and recognizes employees in the feed using
+# a dictionary of employee codes and names.
 class Camera_feed_identified(object):
     def __init__(self):
-        self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        self.cap = None  # Khởi tạo thuộc tính video
         self.is_running = True
-        (self.grabbed, self.frame) = self.video.read()
         self.recognized_records = {}
         # 3 phút (đơn vị: giây)
         self.expiration_time = 24 * 60  
@@ -326,14 +327,18 @@ class Camera_feed_identified(object):
         threading.Thread(target=self.update, args=()).start()
 
     def __del__(self):
-        self.video.release()
-    
+        if self.cap is not None:
+            self.cap.release()
+
     def __enter__(self):
         self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        (self.grabbed, self.frame) = self.video.read()  # Di chuyển dòng này xuống đây
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.video.release()
+        if self.cap is not None:
+            self.cap.release()
+
     
     def get_name(self, emcode):
         return self.employee_dict.get(emcode)
