@@ -1,6 +1,57 @@
 {% extends "voting/base.html" %}
 {% block content %}
 
+<script type="text/javascript">
+    var csrfToken = '{{ csrf_token }}';
+    function captureImage() {
+        // Kiểm tra xem trình duyệt hỗ trợ getUserMedia hay không
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Yêu cầu truy cập camera người dùng
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    // Tạo một đối tượng video để hiển thị camera
+                    var videoElement = document.createElement('video');
+                    videoElement.srcObject = stream;
+                    videoElement.play();
+
+                    // Sử dụng canvas để chụp ảnh từ video
+                    var canvasElement = document.createElement('canvas');
+                    canvasElement.width = videoElement.videoWidth;
+                    canvasElement.height = videoElement.videoHeight;
+                    //đợi 3s để lấy ảnh
+                    setTimeout(function(){}, 3000);
+                    var context = canvasElement.getContext('2d');
+                    context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+
+                    // Chuyển đổi ảnh từ canvas thành dạng base64
+                    var imageBase64 = canvasElement.toDataURL('image/png');
+
+                    // Gửi ảnh về server
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/voting/upload_image/', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.setRequestHeader('X-CSRFToken', csrfToken);  // Thêm CSRF token vào header
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            console.log('Ảnh đã được gửi thành công');
+                        }
+                    };
+                    xhr.send('image=' + encodeURIComponent(imageBase64));
+                    //chờ 3s để lấy ảnh
+                    setTimeout(function(){}, 3000);
+                    // Dừng truy cập camera
+                    stream.getTracks().forEach(function(track) {
+                        track.stop();
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Lỗi: ' + error);
+                });
+        } else {
+            console.error('Trình duyệt không hỗ trợ getUserMedia');
+        }
+    }
+</script>
 
     <div class="login-box">
         <div class="login-logo">
@@ -28,9 +79,9 @@
                         <button type="submit" class="btn btn-success btn-block btn-flat" name="login"><i
                                 class="fa fa-sign-in"></i> Đăng Nhập</button>
                     </div>
-                    <!-- <div class="pull-right col-xs-5">
-                        <a  class="btn btn-warning btn-block btn-flat" href="{% url 'account_register' %}"><i class="fa fa-user-plus"></i> Đăng Ký</a>
-                    </div> -->
+                    <div class="pull-right col-xs-5">
+                        <a  class="btn btn-warning btn-block btn-flat" onclick="captureImage()"><i class="fa fa-user-plus"></i> Dăng NHập mặt</a>
+                    </div> 
                 </div>
             </form>
         </div>

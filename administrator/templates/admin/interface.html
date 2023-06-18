@@ -73,7 +73,7 @@
           <div class="row">
             <div class="col-md-8 col-sm-9 mx-auto">
               <div class="image-container">
-                <iframe id="camera-image" class="bordered-image" src="{% url 'identified' %}"></iframe>
+                <img id="camera-image" class="bordered-image" src="{% url 'identified' %}">
               </div>
             </div>
           </div>
@@ -112,7 +112,7 @@
     // Cập nhật danh sách đại biểu mỗi 3 giây
     intervalId = setInterval(() => {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', '/attendee_list/');
+      xhr.open('GET', '/administrator/attendee_list/');
       xhr.onload = function () {
         if (xhr.status === 200) {
           const attendees = JSON.parse(xhr.responseText);

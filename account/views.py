@@ -9,9 +9,7 @@ from django.contrib.auth import login, logout
 import os
 # Create your views here.
 
-def ad_train(request):
 
-    return render(request, 'ad_train.html')
 
 def account_login(request):
     
@@ -37,52 +35,52 @@ def account_login(request):
 
     return render(request, "voting/login.html", context)
 
-def account_register(request):
-    userForm = CustomUserForm(request.POST or None)
-    voterForm = VoterForm(request.POST or None)
+# def account_register(request):
+#     userForm = CustomUserForm(request.POST or None)
+#     voterForm = VoterForm(request.POST or None)
     
-    context = {
-        'form1': userForm,
-        'form2': voterForm
-    }
+#     context = {
+#         'form1': userForm,
+#         'form2': voterForm
+#     }
     
-    if request.method == 'POST':
-        if userForm.is_valid() and voterForm.is_valid():
-            user = userForm.save(commit=False)
-            voter = voterForm.save(commit=False)
-            voter.admin = user
-            user.save()
-            voter.save()
-            user_id = user.id
-            context['user_id'] = user_id  # Thêm user_id vào context
+#     if request.method == 'POST':
+#         if userForm.is_valid() and voterForm.is_valid():
+#             user = userForm.save(commit=False)
+#             voter = voterForm.save(commit=False)
+#             voter.admin = user
+#             user.save()
+#             voter.save()
+#             user_id = user.id
+#             context['user_id'] = user_id  # Thêm user_id vào context
             
-            return JsonResponse({'success': True, 'user_id': user_id})
-        else:
-            return JsonResponse({'success': False, 'errors': userForm.errors})
+#             return JsonResponse({'success': True, 'user_id': user_id})
+#         else:
+#             return JsonResponse({'success': False, 'errors': userForm.errors})
     
-    return render(request, "ad_reg.html", context)
+#     return render(request, "ad_reg.html", context)
 
-def create_folder(request):
-    folder_name = request.GET.get('name')
-    folder_path = os.path.join('./static/data/', folder_name)
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-        print(folder_name)
-    return render(request, 'upload.html',{'folder_name': folder_name})
+# def create_folder(request):
+#     folder_name = request.GET.get('name')
+#     folder_path = os.path.join('./static/data/', folder_name)
+#     if not os.path.exists(folder_path):
+#         os.makedirs(folder_path)
+#         print(folder_name)
+#     return render(request, 'upload.html',{'folder_name': folder_name})
     
-def upload_images(request):
-    if request.method == 'POST':
-        folder_name = request.POST.get('folder_name')
-        folder_path = os.path.join('./static/data/', folder_name)
+# def upload_images(request):
+#     if request.method == 'POST':
+#         folder_name = request.POST.get('folder_name')
+#         folder_path = os.path.join('./static/data/', folder_name)
         
-        # Lưu hình ảnh vào thư mục
-        images = request.FILES.getlist('images[]')
-        for i, image_file in enumerate(images):
-            with open(os.path.join(folder_path, image_file.name), 'wb') as f:
-                f.write(image_file.read())
+#         # Lưu hình ảnh vào thư mục
+#         images = request.FILES.getlist('images[]')
+#         for i, image_file in enumerate(images):
+#             with open(os.path.join(folder_path, image_file.name), 'wb') as f:
+#                 f.write(image_file.read())
         
-        messages.success(request, 'Đăng ký tài khoản thành công.')
-        return redirect('account_register')
+#         messages.success(request, 'Đăng ký tài khoản thành công.')
+#         return redirect('account_register')
 
 
 

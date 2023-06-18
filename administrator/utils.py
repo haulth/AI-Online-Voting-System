@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from django.conf import settings
 from django.http import HttpResponse
 import cv2
 import time
@@ -9,11 +10,13 @@ import os
 from . import FacialRecognition 
 from django.contrib import messages
 import subprocess
-from django.contrib.auth.models import User
+from account.models import CustomUser as User
 from .models import EmployeeDetail, Attendance
 import threading
 from django.shortcuts import redirect
 import unidecode
+import qrcode
+
 
 
 currentPythonFilePath = os.getcwd()
@@ -310,38 +313,67 @@ def train(request):
     messages.success(request, 'Train dữ liệu thành công.')
     return HttpResponse('ok luon')
 
+def create_qrcode(text):
+    # Tạo đối tượng QR code
+    qr = qrcode.QRCode(
+        version=4,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    # Thêm dữ liệu vào QR code
+    qr.add_data(text)
+    qr.make(fit=True)
+
+    # Tạo ảnh QR code từ đối tượng QR code
+    qr_image = qr.make_image(fill_color="black", back_color="white")
+
+    # Lưu ảnh QR code thành file tại thư mục 'static/images/qrcode'
+    save_path = os.path.join('static/images/qrcode', f'{text}.png')
+    save_path = save_path.replace('\\', '/')  # Thay thế ký tự '\' bằng '/'
+    file_path = os.path.join(settings.BASE_DIR, 'qrcode_path.txt')
+    with open(file_path, 'w') as file:
+        file.write('/'.join(save_path.split('/')[3:]))  # Ghi đường dẫn sau từ khóa "static" vào file
+    qr_image.save(save_path)
+
+    return save_path
+
 # The class Camera_feed_identified initializes a video feed and recognizes employees in the feed using
 # a dictionary of employee codes and names.
-class Camera_feed_identified(object):
+class Camera_feed_identified():
     def __init__(self):
-        self.cap = None  # Khởi tạo thuộc tính video
+        self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         self.is_running = True
+        (self.grabbed, self.frame) = self.video.read()
         self.recognized_records = {}
         # 3 phút (đơn vị: giây)
         self.expiration_time = 24 * 60  
-        employees = EmployeeDetail.objects.all()
-        self.employee_dict = {}
-        for employee in employees:
-            self.employee_dict[employee.emcode] = employee.user.last_name + ' ' + employee.user.first_name
+        ids = User.objects.all()
+        self.voters_dict = {}
+        for id in ids:
+            self.voters_dict[id.get_id()] = id.get_full_name()
         #threading dung de chay song song voi chuong trinh chinh
         threading.Thread(target=self.update, args=()).start()
 
+    # def __enter__(self):
+    #     self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    #     (self.grabbed, self.frame) = self.video.read()  # Di chuyển dòng này xuống đây
+    #     return self
+
     def __del__(self):
-        if self.cap is not None:
-            self.cap.release()
+        if self.video is not None:
+            self.video.release()
 
-    def __enter__(self):
-        self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-        (self.grabbed, self.frame) = self.video.read()  # Di chuyển dòng này xuống đây
-        return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.cap is not None:
-            self.cap.release()
+
+    # def __exit__(self, exc_type, exc_val, exc_tb):
+    #     if self.video is not None:
+    #         self.video.release()
 
     
-    def get_name(self, emcode):
-        return self.employee_dict.get(emcode)
+    def get_name(self, id):
+        print('get_name',self.voters_dict)
+        return self.voters_dict.get(id)
     
     def remove_diacritics(self, text):
         text = unidecode.unidecode(text)
@@ -356,23 +388,25 @@ class Camera_feed_identified(object):
         _, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
     
-    def perform_attendance(self,empcode, name):
+    def perform_attendance(self,id, name):
         print('perform_attendance')
-
-        # #truy vấn tất cả các bản ghi trong bảng Attendance với điều kiện ( date = ngày hiện tại và emcode = mã nhân viên) rồi đếm số lượng bản ghi
-        count = Attendance.objects.filter(date=datetime.now().date(), emcode=empcode).count()
-        print(count)
-        attendance = Attendance.objects.create(
-            emcode=empcode,
-            name=name,
-            date=datetime.now().date(),
-            time=datetime.now().time(),
-            counter=count+1
-        )
-        attendance.save()
+        #kiểm tra xem đã điểm danh chưa
+        atten=Attendance.objects.filter(userid=id,date=datetime.now().date())
+        print('atten',atten)
+        if atten is not None:           
+            attendance = Attendance.objects.create(
+                userid=id,
+                date=datetime.now().date(),
+                time_in=datetime.now().time(),
+            )
+            attendance.save()
+            return name
+        else:
+            return "Da diem danh"
 
     def check_duplicate_attendance(self, code):
         current_time = time.time()
+        print("record",self.recognized_records)
         if code in self.recognized_records:
             last_detection_time = self.recognized_records[code]
             time_since_last_detection = current_time - last_detection_time   
@@ -383,6 +417,7 @@ class Camera_feed_identified(object):
         return False  # Chưa xác định điểm danh trùng lặp
     
     def update(self):    
+        # start= True
         count = 0
         while True:
             try:
@@ -397,16 +432,11 @@ class Camera_feed_identified(object):
                     code = barcodes[-1]
 
                     # Lấy tên từ mã vạch
-                    name = self.get_name(code)
+                    name = self.get_name(int(code))
                     if name is not None:
                         # Kiểm tra và xử lý điểm danh trùng lặp
-                        print(name)
                         if self.check_duplicate_attendance(code)==False:                 
-                            # Ghi vào file CSV
-                            
-                            #writer.writerow([name])
-                            # Thực hiện điểm danh
-                            self.perform_attendance(code, name)
+                            name=self.perform_attendance(code,name)
                         
                         name = self.remove_diacritics(name)
                         cv2.putText(frame, name, (x[-1], y[-1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
@@ -423,56 +453,66 @@ class Camera_feed_identified(object):
                 #     start = False
                 for face in faces:
                     x1, y1, x2, y2 = face[:4]
-                    eye_points , is_blink = fakedetector.detect_blink(rgb, x1, y1, x2, y2, 0.2, 0.3)
-                    if is_blink:
-                        count += 1
-                    if count == 3:
+                    
+                    # cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+                    
+                    # eye_points , is_blink = fakedetector.detect_blink(rgb, x1, y1, x2, y2, 0.2, 0.3)
+                    # if is_blink:
+                    #     count += 1
+                    #     cv2.putText(frame, "Nham mat: "+str(count), (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                    # if count == 3:
                         # Lấy ảnh khuôn mặt
-                        face_img = rgb[int(y1):int(y2), int(x1):int(x2), :]
-                        
-                        # Lấy embedding của khuôn mặt
-                        embeddings = detector.get_embeddings(face_img)
-                        
-                        # Nhận dạng khuôn mặt
-                        emcode, prob = recognizer.recognize_face(embeddings)
-
-                        if emcode != 'unknown':
-                            name = self.get_name(emcode)
-                            if name is not None:
-                                # Kiểm tra và xử lý điểm danh trùng lặp
-                                if self.check_duplicate_attendance(emcode)==False:
-                                    # Ghi vào file CSV
-                                    cv2.putText(frame, "Ban da check in roi", (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                                    self.perform_attendance(emcode, name)
-                                    count = 0
-                                    # Bỏ qua điểm danh nếu đã được thực hiện trong khoảng thời gian 3 phút
-                                #name = self.remove_diacritics(name)
-                            else:
-                                name = 'Khong xac dinh'
+                    face_img = rgb[int(y1):int(y2), int(x1):int(x2), :]
+                    
+                    # Lấy embedding của khuôn mặt
+                    embeddings = detector.get_embeddings(face_img)
+                    
+                    # Nhận dạng khuôn mặt
+                    id, prob = recognizer.recognize_face(embeddings)
+                    
+                    if id != 'unknown':
+                        name = self.get_name(int(id))
+                        if name is not None:
+                            if self.check_duplicate_attendance(id)==False:
+                                name=self.perform_attendance(id,name)
+                                
+                                
+                            else:                            
+                                cv2.putText(frame, "Ban da check in roi", (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                                name = 'Da diem danh'
+                            # Bỏ qua điểm danh nếu đã được thực hiện trong khoảng thời gian quy định
+                            name = self.remove_diacritics(name)
+                            count = 0
                         else:
                             name = 'Khong xac dinh'
-                        
-                        # Vẽ hình chữ nhật và tên
-                        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
-                        if name == 'Khong xac dinh':
-                            name = 'Khong co trong he thong'
-                            cv2.putText(frame, "{}".format(name), (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                        else:
-                            cv2.putText(frame, "{} {:.2f}".format(name, prob), (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    else:
+                        name = 'Khong xac dinh'
+                    
+                    # Vẽ hình chữ nhật và tên
+                    cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+                    if name == 'Khong xac dinh':
+                        name = 'Khong co trong he thong'
+                        cv2.putText(frame, "{}".format(name), (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                    else:
+                        cv2.putText(frame, "{} {:.2f}".format(name, prob), (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
 
                 self.frame = frame
                 self.grabbed = grabbed
             
-            except:
-                try:
-                    grabbed, frame = self.video.read()
-                    self.frame = frame
-                    self.grabbed = grabbed
-                except:
-                    pass
+            except Exception as e:
+                print(e)
+                # try:
+                #     grabbed, frame = self.video.read()
+                #     self.frame = frame
+                #     self.grabbed = grabbed
+                # except:
+                #     pass
             
             if not self.is_running:
+
                 break
+        self.video.release()
             
 
 def Gender_frame(camera):
@@ -486,8 +526,7 @@ def Gender_frame(camera):
             
             if camera.is_running == False:
                 break
-        except GeneratorExit:
-            
+        except GeneratorExit: 
             break
             
         except:

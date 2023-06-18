@@ -1,9 +1,11 @@
 
+import shutil
 from django.shortcuts import render, reverse, redirect
 from voting.forms import CandidateForm, PositionForm, VoterForm
 from voting.models import Voter, Position, Candidate, Votes
 from account.models import CustomUser
 from account.forms import CustomUserForm
+from .models import Attendance
 from voting.forms import *
 from django.contrib import messages
 from django.http import JsonResponse
@@ -17,9 +19,59 @@ import time
 import os
 import csv
 import json
-import subprocess
-
 from . utils import *
+
+
+
+
+def account_register(request):
+    userForm = CustomUserForm(request.POST or None)
+    voterForm = VoterForm(request.POST or None)
+    
+    context = {
+        'form1': userForm,
+        'form2': voterForm
+    }
+    
+    if request.method == 'POST':
+        if userForm.is_valid() and voterForm.is_valid():
+            user = userForm.save(commit=False)
+            voter = voterForm.save(commit=False)
+            voter.admin = user
+            user.save()
+            voter.save()
+            user_id = user.id
+            context['user_id'] = user_id  # Thêm user_id vào context
+            create_qrcode(user_id)
+            return JsonResponse({'success': True, 'user_id': user_id})
+        else:
+            return JsonResponse({'success': False, 'errors': userForm.errors})
+    
+    return render(request, "admin/ad_reg.html", context)
+
+def create_folder(request):
+    folder_name = request.GET.get('name')
+    folder_path = os.path.join('./static/data/', folder_name)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(folder_name)
+    return render(request, 'admin/upload.html',{'folder_name': folder_name})
+    
+def upload_images(request):
+    if request.method == 'POST':
+        folder_name = request.POST.get('folder_name')
+        folder_path = os.path.join('./static/data/', folder_name)
+        
+        # Lưu hình ảnh vào thư mục
+        images = request.FILES.getlist('images[]')
+        for i, image_file in enumerate(images):
+            with open(os.path.join(folder_path, image_file.name), 'wb') as f:
+                f.write(image_file.read())
+        
+        messages.success(request, 'Đăng ký tài khoản thành công.')
+        return redirect('account_register')
+
+
 
 
 def ad_train(request):
@@ -32,7 +84,7 @@ def interface(request):
 def timetrain(request):
    # Đọc nội dung từ file txt
     train_datetimes = []
-    with open('time.txt', 'r', encoding='utf-8') as file:
+    with open('train_time.txt', 'r', encoding='utf-8') as file:
         train_datetimes = file.readlines()
 
     # Xóa ký tự xuống dòng ở cuối mỗi dòng
@@ -62,60 +114,35 @@ def get_camera_index():
     
 def identified(request):
     try:
-        camera_index = get_camera_index()
-        with Camera_feed_identified(camera_index) as cam:
-
-            gen = Gender_frame(cam)
-            if request.method == 'GET':
-                try:
-                    return StreamingHttpResponse(gen, content_type="multipart/x-mixed-replace;boundary=frame")
-                except:
-                    pass
-            elif request.method == 'POST':
-                if threading.active_count() > 0:
-                    cam.video.release()
-                    cam.stop()
-                    time.sleep(0.2)
-                    gen.close()
-                    messages.success(request, "Dừng thành công.")
-                    return HttpResponse("success")
-                else:
-                    messages.error(request, "Dừng không thành công.")
-                    return HttpResponse("fail")
-    except:
-        print("lỗi rồi")
+        cam=Camera_feed_identified()
+        gen = Gender_frame(cam)
+        if request.method == 'GET':
+            try:
+                return StreamingHttpResponse(gen, content_type="multipart/x-mixed-replace;boundary=frame")
+            except:
+                pass
+        elif request.method == 'POST':
+            if threading.active_count() > 0:
+                cam.stop()
+                time.sleep(0.2)
+                gen.close()
+                messages.success(request, "Dừng thành công.")
+                return HttpResponse("success")
+            else:
+                messages.error(request, "Dừng không thành công.")
+                return HttpResponse("fail")
+    except Exception as e:
+        print("lỗi",str(e))
         return HttpResponse("lõ rồi")
 
-def run_uvircorn(request):
-    # Đường dẫn tới thư mục model
-    model_dir = './model'
-    # Chạy lệnh uvicorn với thư mục model và cổng 8080
-    cmd = f"uvicorn main:app --reload --port 8080 --root-path {model_dir}"
-    subprocess.Popen(cmd, shell=True, cwd=model_dir)
-
-    # Hiển thị thông báo cho người dùng
-    messages.success(request, 'Khởi động Fast API thành công!')
-
-    # Chuyển hướng người dùng đến trang /administrator/interface/
-    return HttpResponse('Khởi động Fast API thành công!')
-
-# hàm dừng Fast API
-def stop_uvircorn(request):
-    os.chdir("./model")
-    os.system("taskkill /f /im uvicorn.exe")
-    # os.system("cls" if os.name == "nt" else "clear")
-    # os.system("exit")
-    # Hiển thị thông báo cho người dùng
-    messages.success(request, 'Dừng Fast API thành công!')
-    # Chuyển hướng người dùng đến trang /administrator/interface/
-    return HttpResponse('Dừng Fast API thành công!')
-
-# hàm trả kết quả tên đại biểu có mặt
-
-
 def attendee_list(request):
-    file_path = 'names.csv'
-    name_list = read_csv(file_path)
+    attendance = Attendance.objects.filter(date=datetime.now().date())
+    
+    name_list = []
+    for i in attendance:
+        name = CustomUser.objects.get(id=i.userid)
+        name_list.append(name.get_full_name())
+    
     return HttpResponse(json.dumps(name_list), content_type='application/json')
 
 # hàm đọc files csv có danh sách đại biểu kèm theo
@@ -396,6 +423,31 @@ def updateVoter(request):
 
     return redirect(reverse('adminViewVoters'))
 
+#hàm download
+def QRVoter(request):
+    if request.method != 'POST':
+        messages.error(request, "Truy cập bị từ chối")
+    try:
+        voter_id = request.POST.get('id')
+        admin = Voter.objects.get(id=voter_id).admin
+        image_path = os.path.join('static', 'images', 'qrcode', str(admin.get_id()) + '.png')
+        full_path = os.path.abspath(image_path)
+        
+        if os.path.exists(full_path):
+            with open(full_path, 'rb') as image_file:
+                response = HttpResponse(image_file, content_type='image/png')
+                response['Content-Disposition'] = 'attachment; filename="qrcode.png"'
+                #respone with file name = admin.get_full_name()
+                #response['Content-Disposition'] = 'attachment; filename="''.png"'
+                return response
+        else:
+            messages.error(request, "Tệp tin ảnh không tồn tại")
+        #messages.success(request, "Đã tải mã QR của đại biểu "+admin.first_name+" "+admin.last_name+" thành công")
+    except:
+        messages.error(request, "Quyền truy cập vào tài nguyên này bị từ chối")
+
+    return redirect(reverse('adminViewVoters'))
+
 # hàm xóa
 
 
@@ -403,7 +455,29 @@ def deleteVoter(request):
     if request.method != 'POST':
         messages.error(request, "Truy cập bị từ chối")
     try:
-        admin = Voter.objects.get(id=request.POST.get('id')).admin
+        id=request.POST.get('id')
+        admin = Voter.objects.get(id =id).admin
+         # Xóa thư mục theo mã nhân viên tương ứn
+        try:
+            folder_path = os.path.join('static', 'data', str(admin.get_id()))
+            full_path = os.path.abspath(folder_path)
+            shutil.rmtree(full_path)
+        except Exception as e:
+            print(e)
+        try:
+            folder_path = os.path.join(
+                'static', 'data_process', 'process', str(admin.get_id()))
+            full_path = os.path.abspath(folder_path)
+            shutil.rmtree(full_path)
+        except Exception as e:
+            print(e)
+        try:
+            folder_path = os.path.join(
+                'static', 'data_process', 'raw', str(admin.get_id()))
+            full_path = os.path.abspath(folder_path)
+            shutil.rmtree(full_path)
+        except:
+            pass
         admin.delete()
         messages.success(request, "Đại biểu đã bị xóa")
     except:
@@ -422,7 +496,47 @@ def deleteAllVoters(request):
     try:
         Votes.objects.all().delete()
         Voter.objects.all().delete()
+
         CustomUser.objects.exclude(is_superuser=True).delete()
+         # Xóa thư mục theo mã nhân viên tương ứng
+        folder_path = os.path.join('static', 'data')
+        # Lặp qua tất cả các thư mục và tệp tin trong folder_path
+        for root, dirs, files in os.walk(folder_path, topdown=False):
+            for name in dirs:
+                # Xóa thư mục
+                try:
+                    folder_to_delete = os.path.join(root, name)
+                    shutil.rmtree(folder_to_delete)
+                except:
+                    pass
+        try:
+            folder_path = os.path.join(
+                'static', 'data_process', 'process')
+            # Lặp qua tất cả các thư mục và tệp tin trong folder_path
+            for root, dirs, files in os.walk(folder_path, topdown=False):
+                for name in dirs:
+                    # Xóa thư mục
+                    try:
+                        folder_to_delete = os.path.join(root, name)
+                        shutil.rmtree(folder_to_delete)
+                    except:
+                        pass
+        except:
+            pass
+        try:
+            folder_path = os.path.join(
+                'static', 'data_process', 'raw')
+                        # Lặp qua tất cả các thư mục và tệp tin trong folder_path
+            for root, dirs, files in os.walk(folder_path, topdown=False):
+                for name in dirs:
+                    # Xóa thư mục
+                    try:
+                        folder_to_delete = os.path.join(root, name)
+                        shutil.rmtree(folder_to_delete)
+                    except:
+                        pass
+        except:
+            pass
         messages.success(request, "Tất cả đại biểu đã bị xóa")
     except:
         messages.error(request, "Quyền truy cập vào tài nguyên này bị từ chối")

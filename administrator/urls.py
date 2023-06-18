@@ -7,6 +7,7 @@ urlpatterns = [
     path('voters', views.voters, name="adminViewVoters"),
     path('voters/view', views.view_voter_by_id, name="viewVoter"),
     path('voters/delete', views.deleteVoter, name='deleteVoter'),
+    path('voters/QRVoter', views.QRVoter, name='QRVoter'),
     path('voters/delete_all', views.deleteAllVoters, name='deleteAllVoters'),
     path('voters/update', views.updateVoter, name="updateVoter"),
     path('delete-all/', views.deleteAllVoters, name='deleteAllVoters'),
@@ -40,10 +41,12 @@ urlpatterns = [
     path('interface/', views.interface, name='interface'),
     path('identified/', views.identified, name='identified'),
     path('attendee_list/', views.attendee_list, name='attendee_list'),
-    path('run_uvicorn/',views.run_uvircorn, name='run_uvicorn'),
-    path('stop_uvircorn/', views.stop_uvircorn, name='stop_uvircorn'),
     path('face_detection/', views.face_detection, name='face_detection'),
     path('ad_train/', views.ad_train, name='ad_train'),
     path('train/', views.train, name='train'),
     path('timetrain/', views.timetrain, name='timetrain'),
+
+    path('upload_images/', views.upload_images, name="upload_images"),
+    path('create_folder/', views.create_folder, name='create_folder'),
+    path('register/', views.account_register, name="account_register"),
 ]

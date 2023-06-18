@@ -59,7 +59,7 @@
 <div class="container">
     <div class="upload-container">
         <div class="form-container">
-            <form action="/upload_images/" method="POST" enctype="multipart/form-data">
+            <form action="/administrator/upload_images/" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="hidden" name="folder_name" value="{{ folder_name }}">
                 <div class="form-group">

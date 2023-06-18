@@ -222,7 +222,7 @@
                     const trainingLog = document.getElementById('training-log');
 
                     // Gửi yêu cầu lấy thông tin ngày giờ train
-                    fetch('/timetrain/')
+                    fetch('/administrator/timetrain/')
                         .then(response => response.json())
                         .then(data => {
                             const trainDatetimes = data.train_datetimes;
@@ -251,7 +251,7 @@
                     trainingStatus.style.display = 'block';
 
                     // Gửi yêu cầu train dữ liệu
-                    fetch('/train/')
+                    fetch('/administrator/train/')
                         .then(() => {
                             // Quá trình train hoàn tất, chuyển hướng người dùng đến trang khác (ví dụ: trang chủ)
                             window.location.href = 'http://localhost:8000/administrator/ad_train/';

@@ -40,7 +40,7 @@
 
                   </div>
                   <div class="col-md-5 mb-2" id="camera-button">
-                    <a class="btn btn-danger btn-block" id="camera-btn" onclick="camera();" style="display: none;"><i
+                    <a class="btn btn-danger btn-block" id="camera-btn"  style="display: none;"><i
                         class="fa fas fa-camera"></i> Camera</a>
                   </div>
                 </div>
@@ -62,7 +62,7 @@
   let cameraClicked = false;
 
   function uploadImage() {
-    const url = `/create_folder/?name=${user_id}`;
+    const url = `/administrator/create_folder/?name=${user_id}`;
     fetch(url)
       .then(response => {
         if (response.ok) {
@@ -87,12 +87,12 @@
 
   function camera() {
 
-    const url = `/face_detection/?name=${user_id}`;
+    const url = `/administrator/face_detection/?name=${user_id}`;
 
     fetch(url)
       .then(response => {
         if (response.ok) {
-          window.location.href = 'http://localhost:8000/account/register/';
+          window.location.href = 'http://localhost:8000/administrator/register/';
         }
       })
       .catch(error => {
