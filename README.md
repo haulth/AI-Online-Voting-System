@@ -1,4 +1,4 @@
-# 📃Web_BieuQuyet
+# 📃AI-Online-Voting-System
  <h1 align="center">Artificial Intelligence Integrated Online Voting System</h1> 
  <h2 align="center">Hệ Thống Bỏ Phiếu Trực Tuyến Tích Hợp Trí Tuệ Nhân Tạo</h2> 
 
