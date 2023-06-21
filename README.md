@@ -1,6 +1,6 @@
 # 📃Web_BieuQuyet
  <h1 align="center">Artificial Intelligence Integrated Online Voting System</h1> 
- <h2 align="center">Hệ Thống Bỏ Phiếu</h2> 
+ <h2 align="center">Hệ thống bỏ phiếu trực tuyến tích hợp trí tuệ nhân tạo</h2> 
 
 ## :star2: About the Project
 
