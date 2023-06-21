@@ -83,3 +83,4 @@ uvicorn
 Werkzeug
 wrapt
 zipp
+dlib

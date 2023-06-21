@@ -1,6 +1,5 @@
-**Log on to codeastro.com for more projects!**
 
-**Developed By Owonubi Job Sunday**
+**Developed By Le Trung Hau**
 
 **Instructions**
 - Install the Requirements: pip install -r requirements.txt
