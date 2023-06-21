@@ -8,7 +8,7 @@
 
 ## :star2: Features
 
-  This System wil have the following features:
+  **This System wil have the following features:**
   - Admin Login
   - Admin Dashboard
   - Add Voters
@@ -22,7 +22,7 @@
   - Change Password
   - Update Profile
   - Logout
-  ** special features **
+  **Special Features**
   - Identify the voter by their face with camera (feature attdendance voter)
   - Login with their face (feature login with face)
 
@@ -61,7 +61,7 @@
 
 
 ## 🚀 Usage
-  **This system is in development
+  **This system is in development**
 
   **Developed By Le Trung Hau**
 
