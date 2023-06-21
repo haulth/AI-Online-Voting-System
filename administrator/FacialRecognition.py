@@ -213,6 +213,7 @@ def main(args):
         faces, _= detector.get_faces(rgb)
 
         # Loop over detected faces
+        
         for face in faces:
             try:
                 print (face[:4])

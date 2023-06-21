@@ -16,8 +16,9 @@ class ImageAugmenter:
         return img_rotated
 
     def flip(self, image):
-        img_flipped = cv2.flip(image, 0)
+        img_flipped = cv2.flip(image, 1)
         return img_flipped
+
 
     def add_noise(self, image, percent):
         noise = np.random.normal(0, 1, image.shape)
@@ -25,34 +26,40 @@ class ImageAugmenter:
         img_noisy = np.clip(img_noisy, 0, 255).astype(np.uint8)
         return img_noisy
 
-    def augment(self, angle=15, percent=0.05):
+    def augment(self, angle=15, percent=0.1):
         for root, _, files in os.walk(self.input_folder):
             for filename in tqdm(files):
-                # read image
-                input_path = os.path.join(root, filename)
-                img = cv2.imread(input_path)
+                try:
+                    # read image
+                    input_path = os.path.join(root, filename)
+                    img = cv2.imread(input_path)
 
-                # rotate left image
-                img_rotated_left = self.rotate(img, angle)
+                    # rotate left image
+                    img_rotated_left = self.rotate(img, angle)
 
-                # # flip image
-                # img_flipped = self.flip(img)
+                    # flip image
+                    img_flipped = self.flip(img)
 
-                # rotate right image
-                img_rotated_right = self.rotate(img, -angle)
+                    # rotate right image
+                    img_rotated_right = self.rotate(img, -angle)
 
-                # add noise to image
-                img_noisy = self.add_noise(img, percent)
+                    # add noise to image
+                    img_noisy = self.add_noise(img, percent)
 
-                # create output directory
-                relative_path = os.path.relpath(root, self.input_folder)
-                output_path = os.path.join(self.output_folder, relative_path)
-                os.makedirs(output_path, exist_ok=True)
+                    # create output directory
+                    relative_path = os.path.relpath(root, self.input_folder)
+                    output_path = os.path.join(self.output_folder, relative_path)
+                    os.makedirs(output_path, exist_ok=True)
 
-                # save augmented images
-                cv2.imwrite(os.path.join(output_path, f"rotated_left_{filename}"), img_rotated_left)
-                cv2.imwrite(os.path.join(output_path, f"rotated_right_{filename}"), img_rotated_right)
-                cv2.imwrite(os.path.join(output_path, f"noise_{filename}"), img_noisy)
+                    # save augmented images
+                    cv2.imwrite(os.path.join(output_path, f"rotated_left_{filename}"), img_rotated_left)
+                    cv2.imwrite(os.path.join(output_path, f"rotated_right_{filename}"), img_rotated_right)
+                    cv2.imwrite(os.path.join(output_path, f"flipped_{filename}"), img_flipped)
+                    cv2.imwrite(os.path.join(output_path, f"noise_{filename}"), img_noisy)
+                    cv2.imwrite(os.path.join(output_path, f"original_{filename}"), img)
+                except Exception as e:
+                    print(e)
+
 
 if __name__ == '__main__':
     currentPythonFilePath = os.getcwd()
