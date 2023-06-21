@@ -82,9 +82,9 @@ def ad_train(request):
     return render(request, 'admin/ad_train.html', context)
 def interface(request):
     context = {
-        'page_title': "Giao Diện"
+        'page_title': "Điểm Danh"
         }
-    return render(request, 'admin/interface.html')
+    return render(request, 'admin/interface.html', context)
 
 def timetrain(request):
    # Đọc nội dung từ file txt
