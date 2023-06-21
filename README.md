@@ -55,8 +55,8 @@
     - SVM 
   - Face Fake Detector (comming soon! , i'm working on it):
     - Dlib (maybe)
-  - And many other Python libraries support:
-    - ...
+- And many other Python libraries support:
+  - ...
 
 
 ## 🚀 Usage
