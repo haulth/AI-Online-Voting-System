@@ -29,34 +29,33 @@
 
 ## :gear: Built With
 
-- Main Framework
+- Main Framework:
   - Django
-- Database
+- Database:
   - SQLite
-- Front-End
+- Front-End:
   - HTML
   - CSS
   - Bootstrap 5
   - JavaScript
-- Back-End
-  - Python
-  - Django
-- Editor
-  - Visual Studio Code
-- Version Control
+- Back-End:
+  - Python - 3.9
+  - Django - 3.2.4
+- Editor:
+  - Visual Studio Code - 1.57.1
+- Version Control:
   - Git
   - GitHub
-- Detector Recognize Face
+- Detector Recognize Face:
   - detect face
     - MTCNN
-  - Feature Extractor
+  - Feature Extractor:
     - FaceNet
-  - Classifier
+  - Classifier:
     - SVM 
-  - Face Fake Detector (comming soon! , i'm working on it)
+  - Face Fake Detector (comming soon! , i'm working on it):
     - Dlib (maybe)
-
-  - Other many libary support python
+  - And many other Python libraries support:
     - ...
 
 
