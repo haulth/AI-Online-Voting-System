@@ -30,7 +30,8 @@ def account_register(request):
     
     context = {
         'form1': userForm,
-        'form2': voterForm
+        'form2': voterForm,
+        'page_title': 'Đăng Ký Tài Khoản'
     }
     
     if request.method == 'POST':
@@ -75,10 +76,14 @@ def upload_images(request):
 
 
 def ad_train(request):
-
-    return render(request, 'admin/ad_train.html')
+    context = {
+        'page_title': "Huấn Luyện Mô Hình Máy Học"
+        }
+    return render(request, 'admin/ad_train.html', context)
 def interface(request):
-
+    context = {
+        'page_title': "Giao Diện"
+        }
     return render(request, 'admin/interface.html')
 
 def timetrain(request):
@@ -123,6 +128,7 @@ def identified(request):
                 pass
         elif request.method == 'POST':
             if threading.active_count() > 0:
+                print(cam.is_running)
                 cam.stop()
                 time.sleep(0.2)
                 gen.close()

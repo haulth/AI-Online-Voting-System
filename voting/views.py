@@ -8,44 +8,15 @@ from django.utils.text import slugify
 from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
-import cv2
 # Create your views here.
 from datetime import datetime
 from django.shortcuts import render
-from administrator.utils import *
+
 
 
 #Các thư viện cần thiết
 
-def upload_image(request):
-    print('oke2')
-    if request.method == 'POST':
-        print('oke1')
-        image_base64 = request.POST.get('image')
-        print (image_base64)
-        image_data = base64.b64decode(image_base64.split(',')[-1])
-        print (image_data)
-        #lưu ảnh vào thư mục hiện tại + static/images
-        currentPythonFilePath
-        path= os.path.join(currentPythonFilePath, 'static/images')
-        #tạo tên file ảnh
-        image_name= 'demo.jpg'
-        #ghi file ảnh
-        with open(os.path.join(path, image_name), 'wb') as f:
-            f.write(image_data)
-        #đọc file ảnh
-        img = cv2.imread(os.path.join(path, image_name))
-        print('oke')
-        #show ảnh
-        cv2.imshow('image', img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
 
-
-        return HttpResponse('Ảnh đã được nhận và lưu trữ thành công.')
-
-    # Phản hồi mặc định nếu không có yêu cầu POST
-    return HttpResponseBadRequest('Yêu cầu không hợp lệ.')
 
 def index(request):
     if not request.user.is_authenticated:

@@ -1,91 +1,198 @@
 {% extends "voting/base.html" %}
 {% block content %}
+<style>
 
-<script type="text/javascript">
-    var csrfToken = '{{ csrf_token }}';
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+    
+
+    
+    .notification .close:hover {
+        opacity: 1;
+    }
+    
+    .notification.alert-danger {
+        background-color: #dc3545;
+    }
+    
+    .notification.alert-danger .close {
+        color: #fff;
+    }
+    
+    .notification.alert-danger a {
+        color: #fff;
+        text-decoration: underline;
+    }
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+    
+    .notification {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        color: #fff;
+        background-color: #dc3545;
+    }
+    
+    .notification .close {
+        margin-left: 10px;
+        color: #fff;
+        opacity: 0.5;
+    }
+    
+    .notification .close:hover {
+        opacity: 1;
+    }    
+
+</style>
+<div class="login-box">
+    <div class="login-logo">
+        <b>Hệ Thống Bỏ Phiếu</b>
+    </div>
+
+    <div class="login-box-body">
+        <form action="{% url 'account_login' %}" method="POST">
+            {% csrf_token %}
+
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" name="email" placeholder="Email" required>
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <button type="submit" class="btn btn-success btn-block btn-flat" name="login"><i
+                            class="fa fa-sign-in"></i> Đăng Nhập</button>
+                </div>
+            </div>
+        </form>
+    
+    
+        <div class="login-box-body">
+            <!-- Add camera container and capture button -->
+            <div id="camera-container" style="position: relative;">
+                <video id="camera-video" style="width: 100%; height: auto;"></video>
+                <canvas id="camera-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: auto;"></canvas>
+            </div>
+            <h5 id="hh"></h5>
+
+            <button id="capture-button" class="btn btn-warning btn-block btn-flat col-xs-12" onclick="captureImage()"><i class="fa fa-video-camera" aria-hidden="true"></i> Đăng Nhập bằng khuôn mặt</button>
+
+        </div>
+
+        {% if messages %}
+    <div id="notification-container" class="notification-container">
+        {% for message in messages %}
+            <div class="notification alert alert-danger" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+    </div>
+</div>
+
+<script>
+    //ẩn thẻ với id =camera-container
+    document.getElementById('camera-container').style.display = 'none';
+    // JavaScript code to handle capturing image from camera
     function captureImage() {
-        // Kiểm tra xem trình duyệt hỗ trợ getUserMedia hay không
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            // Yêu cầu truy cập camera người dùng
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function(stream) {
-                    // Tạo một đối tượng video để hiển thị camera
-                    var videoElement = document.createElement('video');
-                    videoElement.srcObject = stream;
-                    videoElement.play();
+        // Access user's camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                var video = document.getElementById('camera-video');
+                var canvas = document.getElementById('camera-canvas');
+                var context = canvas.getContext('2d');
 
-                    // Sử dụng canvas để chụp ảnh từ video
-                    var canvasElement = document.createElement('canvas');
-                    canvasElement.width = videoElement.videoWidth;
-                    canvasElement.height = videoElement.videoHeight;
-                    //đợi 3s để lấy ảnh
-                    setTimeout(function(){}, 3000);
-                    var context = canvasElement.getContext('2d');
-                    context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-
-                    // Chuyển đổi ảnh từ canvas thành dạng base64
-                    var imageBase64 = canvasElement.toDataURL('image/png');
-
-                    // Gửi ảnh về server
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/voting/upload_image/', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.setRequestHeader('X-CSRFToken', csrfToken);  // Thêm CSRF token vào header
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
-                            console.log('Ảnh đã được gửi thành công');
-                        }
-                    };
-                    xhr.send('image=' + encodeURIComponent(imageBase64));
-                    //chờ 3s để lấy ảnh
-                    setTimeout(function(){}, 3000);
-                    // Dừng truy cập camera
-                    stream.getTracks().forEach(function(track) {
+                // Attach the camera stream to the video element
+                video.srcObject = stream;
+                video.play();
+                //thẻ với id =camera-container hiện lên
+                document.getElementById('camera-container').style.display = 'block';
+                //document.getElementById('camera-container').style.display = 'none';
+                //thẻ với id =hh hiện lên với text là đang xử lý
+                document.getElementById('hh').innerHTML = 'Đang xử lý...';
+                //căn giữa thẻ với id =hh
+                document.getElementById('hh').style.textAlign = 'center';
+                //set icon cho thẻ với id =hh
+                document.getElementById('hh').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="font-size:24px"></i>';
+                // Stop the camera stream
+                //thẻ với id = capture-button đổi text thành Lấy ảnh này và icon thành capture image
+                //document.getElementById('capture-button').innerHTML = '<i class="fa fa-camera" aria-hidden="true"></i> Lấy ảnh này ';
+                // Capture an image from the video stream when the capture button is clicked
+                document.getElementById('capture-button').addEventListener('click', function () {
+                    // Pause the video
+                    video.pause();
+                                    //document.getElementById('camera-container').style.display = 'none';
+                    //thẻ với id =hh hiện lên với text là đang xử lý
+                    document.getElementById('hh').innerHTML = 'Đang xử lý...';
+                    //căn giữa thẻ với id =hh
+                    document.getElementById('hh').style.textAlign = 'center';
+                    //set icon cho thẻ với id =hh
+                    document.getElementById('hh').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="font-size:24px"></i>';
+                    stream.getTracks().forEach(function (track) {
                         track.stop();
                     });
-                })
-                .catch(function(error) {
-                    console.error('Lỗi: ' + error);
+                    //nút id = capture-button khóa lại
+                    document.getElementById('capture-button').disabled = true;
+                    // Set the canvas dimensions to match the video dimensions
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+
+                    // Draw the current frame from the video onto the canvas
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // Convert the canvas image to a data URL
+                    var imageDataURL = canvas.toDataURL();
+
+                    // Pass the image data URL to your Django view for further processing
+                    // You can send it using AJAX or include it in a form submission
+                    // Example AJAX request:
+                    $.ajax({
+                        type: 'POST',
+                        url: '{% url "account_login" %}',
+                        //csrf_token
+                        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                        
+                        data: { image_data: imageDataURL },
+                        success: function (response) {
+                            // Handle success
+                            //chuyển trang
+                            window.location.href = "{% url 'account_login' %}";
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle errors
+                            //thẻ với id =hh hiện lên với text là đăng nhập thất bại
+                            document.getElementById('hh').innerHTML = 'Đăng nhập thất bại';
+                            // hiện nút id = capture-button
+                            document.getElementById('capture-button').disabled = false;
+
+
+                        }
+                    });
+    
                 });
-        } else {
-            console.error('Trình duyệt không hỗ trợ getUserMedia');
-        }
+            })
+            .catch(function (error) {
+                // Handle errors
+            });
     }
 </script>
-
-    <div class="login-box">
-        <div class="login-logo">
-            <b>Hệ Thống Bỏ Phiếu</b>
-        </div>
-
-        <div class="login-box-body">
-            <!-- <p class="login-box-msg">Sign in to start your session</p> -->
-
-            <form action="{% url 'account_login' %}" method="POST">
-                {% csrf_token %}
-                
-                
-                <div class="form-group has-feedback">
-                    <input type="text" class="form-control" name="email" placeholder="Email" required>
-                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                </div>
-                <div class="form-group has-feedback">
-                    <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
-                <div class="row">
-                    
-                    <div class="col-xs-5">
-                        <button type="submit" class="btn btn-success btn-block btn-flat" name="login"><i
-                                class="fa fa-sign-in"></i> Đăng Nhập</button>
-                    </div>
-                    <div class="pull-right col-xs-5">
-                        <a  class="btn btn-warning btn-block btn-flat" onclick="captureImage()"><i class="fa fa-user-plus"></i> Dăng NHập mặt</a>
-                    </div> 
-                </div>
-            </form>
-        </div>
-            </div>
-
- 
-{% endblock content %} 
+{% endblock content %}

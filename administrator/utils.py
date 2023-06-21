@@ -307,7 +307,7 @@ def train(request):
     time_str = train_datetime.strftime("%H:%M")
 
     # Ghi thông tin vào file
-    with open('time.txt', 'w',encoding='utf-8') as file:
+    with open('train_time.txt', 'w',encoding='utf-8') as file:
         file.write(f'Thời gian train hoàn thành vào ngày: {date_str} {time_str}\n')
     # Return a success response
     messages.success(request, 'Train dữ liệu thành công.')
@@ -355,24 +355,11 @@ class Camera_feed_identified():
         #threading dung de chay song song voi chuong trinh chinh
         threading.Thread(target=self.update, args=()).start()
 
-    # def __enter__(self):
-    #     self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-    #     (self.grabbed, self.frame) = self.video.read()  # Di chuyển dòng này xuống đây
-    #     return self
-
     def __del__(self):
-        if self.video is not None:
-            self.video.release()
-
-
-
-    # def __exit__(self, exc_type, exc_val, exc_tb):
-    #     if self.video is not None:
-    #         self.video.release()
+        self.video.release()
 
     
     def get_name(self, id):
-        print('get_name',self.voters_dict)
         return self.voters_dict.get(id)
     
     def remove_diacritics(self, text):
@@ -502,17 +489,17 @@ class Camera_feed_identified():
             
             except Exception as e:
                 print(e)
-                # try:
-                #     grabbed, frame = self.video.read()
-                #     self.frame = frame
-                #     self.grabbed = grabbed
-                # except:
-                #     pass
+                try:
+                    grabbed, frame = self.video.read()
+                    self.frame = frame
+                    self.grabbed = grabbed
+                except:
+                    pass
             
-            if not self.is_running:
-
+            if self.is_running == False:
+                self.video.release()
                 break
-        self.video.release()
+        
             
 
 def Gender_frame(camera):
@@ -531,12 +518,3 @@ def Gender_frame(camera):
             
         except:
             pass
-
-
-def data_feed():
-    try:
-        with open(currentPythonFilePath+'/data.txt', 'r',encoding='utf-8') as file:
-            data = file.read()
-        return data
-    except:
-        return 'Chưa có dữ liệu'
