@@ -121,32 +121,40 @@
                 var canvas = document.getElementById('camera-canvas');
                 var context = canvas.getContext('2d');
 
-                // Attach the camera stream to the video element
                 video.srcObject = stream;
                 video.play();
-                //thẻ với id =camera-container hiện lên
-                document.getElementById('camera-container').style.display = 'block';
-                //document.getElementById('camera-container').style.display = 'none';
-                //thẻ với id =hh hiện lên với text là đang xử lý
-                document.getElementById('hh').innerHTML = 'Đang xử lý...';
+                document.getElementById('capture-button').innerHTML = '<i class="fa fa-camera" aria-hidden="true"></i> Lấy ảnh';
                 //căn giữa thẻ với id =hh
                 document.getElementById('hh').style.textAlign = 'center';
                 //set icon cho thẻ với id =hh
                 document.getElementById('hh').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="font-size:24px"></i>';
-                // Stop the camera stream
-                //thẻ với id = capture-button đổi text thành Lấy ảnh này và icon thành capture image
+                document.getElementById('camera-container').style.display = 'block';
+            
+
                 //document.getElementById('capture-button').innerHTML = '<i class="fa fa-camera" aria-hidden="true"></i> Lấy ảnh này ';
                 // Capture an image from the video stream when the capture button is clicked
                 document.getElementById('capture-button').addEventListener('click', function () {
+                    //nếu tê
                     // Pause the video
+                    
+
+                    //ẩn khung camera đi
+                    if (document.getElementById('camera-container').style.display == 'block') {
+                        
+                        // btn capture-button đổi chữ thành đang đăng nhập ... và icon thành đang xử lý 
+                        document.getElementById('capture-button').innerHTML = 'Đang đăng nhập...';
+                        //icon đang xử lý
+                        document.getElementById('capture-button').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="font-size:24px"></i>';
+                        //thẻ với id =hh hiện lên với text là đang xử lý
+                        document.getElementById('hh').innerHTML = 'Đang xử lý...';
+                        //căn giữa thẻ với id =hh
+                        document.getElementById('hh').style.textAlign = 'center';
+                        //set icon cho thẻ với id =hh
+                        document.getElementById('hh').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="font-size:24px"></i>';
+                        
+                        //document.getElementById('h
+                    }
                     video.pause();
-                                    //document.getElementById('camera-container').style.display = 'none';
-                    //thẻ với id =hh hiện lên với text là đang xử lý
-                    document.getElementById('hh').innerHTML = 'Đang xử lý...';
-                    //căn giữa thẻ với id =hh
-                    document.getElementById('hh').style.textAlign = 'center';
-                    //set icon cho thẻ với id =hh
-                    document.getElementById('hh').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="font-size:24px"></i>';
                     stream.getTracks().forEach(function (track) {
                         track.stop();
                     });

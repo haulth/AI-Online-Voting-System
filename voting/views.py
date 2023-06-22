@@ -383,7 +383,7 @@ def show_ballot(request):
         messages.error(request, "Bạn đã bình chọn rồi")
         return redirect(reverse('voterDashboard'))
     ballot = generate_ballot(display_controls=False)
-    return render(request, "voting/voter/ballot.html", {'ballot': ballot, 'time_left_str': time_left_str})
+    return render(request, "voting/voter/ballot.html", {'ballot': ballot, 'time_left_str': time_left_str,'page_title': 'Bỏ phiếu'})
 
 
 def preview_vote(request):
