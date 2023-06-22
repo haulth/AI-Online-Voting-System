@@ -12,6 +12,7 @@ from django.contrib import messages
 import subprocess
 from account.models import CustomUser as User
 from .models import EmployeeDetail, Attendance
+from voting.models import Voter
 import threading
 from django.shortcuts import redirect
 import unidecode
@@ -84,51 +85,7 @@ def face_recognition(request):
     cv2.destroyAllWindows()
     return HttpResponse(name,barcodes)
 
-def find_attendance(code,date):
 
-    attendance = Attendance.objects.filter(emcode=code, date=date)
-    list_time_attendance = []
-    if attendance:
-        for att in attendance:
-            #chuẩn hóa ngày và giờ rồi chèn vào list
-            time_attendance = att.time.strftime("%H:%M:%S")
-            date_attendance = att.date.strftime("%d/%m/%Y")
-            #chèn vào list time_attendance và date_attendance một lượt
-            data = date_attendance+' '+time_attendance
-            list_time_attendance.append(data)
-
-    return list_time_attendance
-
-def tinh_thoi_gian_lam_viec(danh_sach_check_in_out):
-    so_lan_check_in = len(danh_sach_check_in_out) // 2
-    thoi_gian_ca_sang = timedelta()
-    thoi_gian_ca_chieu = timedelta()
-
-    for i in range(so_lan_check_in):
-        index_check_in = i * 2
-        index_check_out = index_check_in + 1
-
-        check_in = to_date_time(danh_sach_check_in_out[index_check_in])
-        check_out = to_date_time(danh_sach_check_in_out[index_check_out])
-
-        # Xác định thời điểm chia ca (12:00 PM)
-        ca_chia_ca = check_in.replace(hour=12, minute=0, second=0)
-
-        # Tính thời gian làm việc của ca sáng
-        if check_in < ca_chia_ca:
-            if check_out <= ca_chia_ca:
-                thoi_gian_ca_sang += check_out - check_in
-            else:
-                thoi_gian_ca_sang += ca_chia_ca - check_in
-
-        # Tính thời gian làm việc của ca chiều
-        if check_out >= ca_chia_ca:
-            if check_in >= ca_chia_ca:
-                thoi_gian_ca_chieu += check_out - check_in
-            else:
-                thoi_gian_ca_chieu += check_out - ca_chia_ca
-
-    return thoi_gian_ca_sang, thoi_gian_ca_chieu
 
 #hàm date range
 def daterange(start_date, end_date):
@@ -149,45 +106,6 @@ def to_time(time):
 
 def calc_time(delta):
     return delta.total_seconds() / 3600
-
-#truy vấn danh sách check in và check out của nhân viên theo ngày
-def query_attendance_all(startDate,endDate):
-    employees = EmployeeDetail.objects.all()
-    
-    list_empcode = []
-    for employee in employees:
-        list_empcode.append(employee.emcode)
-    time_work = []
-    for empcode in list_empcode:
-        for date in daterange(startDate,endDate):
-            ds=find_attendance(empcode,date)
-            sang,chieu=tinh_thoi_gian_lam_viec(ds)
-            print('empcode: ',empcode)
-            print('date: ',date.strftime("%d/%m/%Y"))
-            print('sang: ',sang.total_seconds() / 3600)
-            print('chieu: ',chieu.total_seconds() / 3600)
-
-            time_work.append([empcode,date.strftime("%d/%m/%Y"),calc_time(sang),calc_time(chieu)])
-    return time_work
-
-def query_attendance_by_emcode(empcode,startDate,endDate):
-    time_work = []
-    for date in daterange(startDate,endDate):
-        ds=find_attendance(empcode,date)
-        sang,chieu=tinh_thoi_gian_lam_viec(ds)
-        time_work.append([empcode,date.strftime("%d/%m/%Y"),calc_time(sang),calc_time(chieu)])
-    return time_work
-
-#hàm truy vấn giờ làm theo mã nhân viên và ngày
-def query_time_attendance(request):
-    #convert string to datetime
-    start = '2023-06-07'
-    end = '2023-06-09'
-    date_start = to_date_ymd(start)
-    date_end = to_date_ymd(end)
-    re =query_attendance_all(date_start,date_end)
-    print(re)
-    return HttpResponse(re)
 
 #hàm lấy ảnh từ video cách mỗi 10s 1 lần và lưu vào thư mục static, đọc video từ dường dẫn
 def get_frame(request,path_video):
@@ -213,7 +131,6 @@ def get_frame(request,path_video):
     cap.release()
     cv2.destroyAllWindows()
     return HttpResponse(count)
-   
 
 def face_detection(request):
     
@@ -306,9 +223,16 @@ def train(request):
     # Định dạng giờ theo định dạng 24 giờ (HH:MM)
     time_str = train_datetime.strftime("%H:%M")
 
+    voters = Voter.objects.all()
+    #count voter
+    count = 0
+    for voter in voters:
+        count += 1
+
+
     # Ghi thông tin vào file
-    with open('train_time.txt', 'w',encoding='utf-8') as file:
-        file.write(f'Thời gian train hoàn thành vào ngày: {date_str} {time_str}\n')
+    with open('train_time.txt', 'a',encoding='utf-8') as file:
+        file.write(f'Huấn luyện vào ngày: {date_str} {time_str} Có {count} người được đào tạo\n')
     # Return a success response
     messages.success(request, 'Train dữ liệu thành công.')
     return HttpResponse('ok luon')
@@ -344,6 +268,7 @@ class Camera_feed_identified():
     def __init__(self):
         self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         self.is_running = True
+        
         (self.grabbed, self.frame) = self.video.read()
         self.recognized_records = {}
         # 3 phút (đơn vị: giây)
@@ -353,12 +278,15 @@ class Camera_feed_identified():
         for id in ids:
             self.voters_dict[id.get_id()] = id.get_full_name()
         #threading dung de chay song song voi chuong trinh chinh
-        threading.Thread(target=self.update, args=()).start()
+        self.th =threading.Thread(target=self.update, args=())
+        self.th.setDaemon(True)
+        self.th.start()
 
     def __del__(self):
+        self.is_running = False
+        self.th.join()   
         self.video.release()
 
-    
     def get_name(self, id):
         return self.voters_dict.get(id)
     
@@ -367,20 +295,23 @@ class Camera_feed_identified():
         return text
 
     def stop(self):
-        self.is_running = False 
+        
+        self.is_running = False
+        self.video.release()
 
     def get_frame(self):
-        image = self.frame
-        #chuyển về màu RGB
-        _, jpeg = cv2.imencode('.jpg', image)
-        return jpeg.tobytes()
+        try:
+            image = self.frame
+            #chuyển về màu RGB
+            _, jpeg = cv2.imencode('.jpg', image)
+            return jpeg.tobytes()
+        except:
+            pass
     
     def perform_attendance(self,id, name):
-        print('perform_attendance')
         #kiểm tra xem đã điểm danh chưa
-        atten=Attendance.objects.filter(userid=id,date=datetime.now().date())
-        print('atten',atten)
-        if atten is not None:           
+        attendances = Attendance.objects.filter(userid=id, date=datetime.now().date())
+        if attendances is None:           
             attendance = Attendance.objects.create(
                 userid=id,
                 date=datetime.now().date(),
@@ -393,7 +324,6 @@ class Camera_feed_identified():
 
     def check_duplicate_attendance(self, code):
         current_time = time.time()
-        print("record",self.recognized_records)
         if code in self.recognized_records:
             last_detection_time = self.recognized_records[code]
             time_since_last_detection = current_time - last_detection_time   
@@ -406,9 +336,11 @@ class Camera_feed_identified():
     def update(self):    
         # start= True
         count = 0
-        while True:
+        while self.is_running:
             try:
                 grabbed, frame = self.video.read()
+                if not grabbed:
+                    break
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 
                 # Đọc mã vạch từ hình ảnh
@@ -496,23 +428,15 @@ class Camera_feed_identified():
                 except:
                     pass
             
-            if self.is_running == False:
-                self.video.release()
-                break
         
             
 
 def Gender_frame(camera):
-    while True:
+    while camera.is_running:
         try:
-
-            frame = camera.get_frame()
-        
+            frame = camera.get_frame()        
             yield (b'--frame\r\n'
                  b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-            
-            if camera.is_running == False:
-                break
         except GeneratorExit: 
             break
             

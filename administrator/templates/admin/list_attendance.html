@@ -1,0 +1,27 @@
+{% extends "root.html" %}
+{% load custom_filters %}
+{% block content %}
+
+
+<section class="content">
+<table class="table table-striped" id="example" style="padding-top: 10px;">
+    <thead>
+        <tr>
+            <th>Tên Cử Chi</th>
+            <th>Ngày</th>
+            <th>Giờ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for attendance in attendances %}
+        <tr>
+            <td>{{ list_name|get_value:attendance.userid }}</td>
+            <td>{{ attendance.date|date:"d/m/Y" }}</td>
+            <td>{{ attendance.time_in|time:"H:i" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</section>
+
+{% endblock %}

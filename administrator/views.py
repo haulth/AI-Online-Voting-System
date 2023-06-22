@@ -22,7 +22,23 @@ import json
 from . utils import *
 
 
+def list_attendance(request):
+    attendances = Attendance.objects.all()
+    users = User.objects.all()
+    list_name = {}
+    for attendance in attendances:
+        list_name[attendance.userid] = []
+        for user in users:
 
+            if str(user.id) == attendance.userid:
+                list_name[attendance.userid]=user.get_full_name()  
+    context = {
+        'page_title': 'Danh Sách Điểm Danh',
+        'attendances': attendances,
+        'list_name': list_name
+    }
+
+    return render(request, 'admin/list_attendance.html', context)
 
 def account_register(request):
     userForm = CustomUserForm(request.POST or None)
@@ -127,13 +143,18 @@ def identified(request):
             except:
                 pass
         elif request.method == 'POST':
+
             if threading.active_count() > 0:
-                print(cam.is_running)
-                cam.stop()
-                time.sleep(0.2)
-                gen.close()
-                messages.success(request, "Dừng thành công.")
-                return HttpResponse("success")
+                try:
+                    print(threading.active_count())
+                    gen.close()
+                    time.sleep(0.2)
+                    cam.__del__()
+                    messages.success(request, "Dừng thành công.")
+                    return HttpResponse("success")
+                except Exception as e:
+                    print("lỗi",str(e))
+                    pass
             else:
                 messages.error(request, "Dừng không thành công.")
                 return HttpResponse("fail")

@@ -171,7 +171,8 @@
         }
       }
     };
-
+    // src của img id = camera-image src = " "
+    document.getElementById('camera-image').src = "";
     xhr.open('POST', "{% url 'identified' %}", true);
     xhr.setRequestHeader('X-CSRFToken', csrftoken);
     xhr.send();

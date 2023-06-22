@@ -38,6 +38,8 @@ urlpatterns = [
     path('save-vote-time/', views.save_vote_time, name='save_vote_time'),
     path('delete_vote_time/', views.delete_vote_time, name='delete_vote_time'),
     path('infovoter/', views.infoVoter, name="infoVoter"),
+    
+    #face recognition
     path('interface/', views.interface, name='interface'),
     path('identified/', views.identified, name='identified'),
     path('attendee_list/', views.attendee_list, name='attendee_list'),
@@ -45,7 +47,7 @@ urlpatterns = [
     path('ad_train/', views.ad_train, name='ad_train'),
     path('train/', views.train, name='train'),
     path('timetrain/', views.timetrain, name='timetrain'),
-
+    path('list_attendance/', views.list_attendance, name='list_attendance'),
     path('upload_images/', views.upload_images, name="upload_images"),
     path('create_folder/', views.create_folder, name='create_folder'),
     path('register/', views.account_register, name="account_register"),
