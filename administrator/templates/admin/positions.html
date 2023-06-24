@@ -6,12 +6,20 @@
 <form id="vote_time_form" method="post" action="{% url 'save_vote_time' %}">
   {% csrf_token %}
   <div class="form-group">
-      <label for="vote_time">Chọn thời gian bầu cử:</label>
-      <input type="datetime-local" class="form-control" id="vote_time" name="vote_time">
-      
-  </div>  
+    <label for="vote_time">Chọn thời gian bầu cử:</label>
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="vote_time_start">Bắt đầu:</label>
+            <input type="datetime-local" class="form-control" id="vote_time_start" name="vote_time_start">
+        </div>
+        <div class="col-sm-6">
+            <label for="vote_time_end">Kết thúc:</label>
+            <input type="datetime-local" class="form-control" id="vote_time_end" name="vote_time_end">
+        </div>
+    </div>
+</div>
   <div class="form-group d-flex justify-content-start">
-    <button type="submit" class="btn btn-primary">Lưu thời gian bầu cử</button>
+    <button type="submit" class="btn btn-primary" onclick="check()">Lưu thời gian bầu cử</button>
     <button id="delete_vote_time" class="btn btn-danger ml-4">Xóa thời gian bầu cử</button>
   </div>
 </form>
@@ -19,30 +27,48 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   var isVoteTimeDeleted = false;  // Biến flag kiểm tra đã xóa thời gian bầu cử hay chưa
-
+  function check() {
+    // Lấy giá trị thời gian từ input
+    var voteTimeStart = $('#vote_time_start').val();
+    var voteTimeEnd = $('#vote_time_end').val();
+    if (voteTimeStart.trim() === '' || voteTimeEnd.trim() === '') {
+      alert("Vui lòng chọn đầy đủ thời gian bầu cử!");
+      event.preventDefault();
+  }
+   //nếu thời gian kết thúc nhỏ hơn thời gian bắt đầu
+    if (voteTimeStart > voteTimeEnd) {
+        alert('Thời gian kết thúc phải lớn hơn thời gian bắt đầu!');
+        return;
+    } 
+  }
   // Đăng ký sự kiện submit cho form
   $('#vote_time_form').submit(function(event) {
       event.preventDefault();  // Ngăn chặn chuyển trang khi submit form
 
       // Lấy giá trị thời gian từ input
-      var voteTime = $('#vote_time').val();
-
+      var voteTimeStart = $('#vote_time_start').val();
+      var voteTimeEnd = $('#vote_time_end').val();
+      if (voteTimeStart.trim() === '' || voteTimeEnd.trim() === '') {
+        alert("Vui lòng chọn đầy đủ thời gian bầu cử!");
+        return;
+     //nếu thời gian kết thúc nhỏ hơn thời gian bắt đầu
+      if (voteTimeStart > voteTimeEnd) {
+          alert('Thời gian kết thúc phải lớn hơn thời gian bắt đầu!');
+          return;
+      } 
       // Gửi request lưu thông tin đến server bằng AJAX
       $.ajax({
           type: 'POST',
           url: "{% url 'save_vote_time' %}",
           data: {
               csrfmiddlewaretoken: '{{ csrf_token }}',
-              vote_time: voteTime
+              vote_time_start: voteTimeStart
+              vote_time_end: voteTimeEnd
           },
-          success: function(response) {
-              if (!isVoteTimeDeleted) {  // Nếu chưa xóa thông tin thời gian bầu cử
-                  alert('Thời gian bầu cử đã được lưu!');
-                  location.reload();
-                  
-              }
+          //success: function(response) {
               
-          }
+              
+          //}
           // error: function(response) {
           //     alert('Có lỗi xảy ra khi lưu thời gian bầu cử!');
           // }

@@ -311,7 +311,8 @@ class Camera_feed_identified():
     def perform_attendance(self,id, name):
         #kiểm tra xem đã điểm danh chưa
         attendances = Attendance.objects.filter(userid=id, date=datetime.now().date())
-        if attendances is None:           
+        print(attendances.count()  )
+        if attendances.count()==0:           
             attendance = Attendance.objects.create(
                 userid=id,
                 date=datetime.now().date(),
@@ -324,6 +325,7 @@ class Camera_feed_identified():
 
     def check_duplicate_attendance(self, code):
         current_time = time.time()
+
         if code in self.recognized_records:
             last_detection_time = self.recognized_records[code]
             time_since_last_detection = current_time - last_detection_time   
@@ -391,11 +393,9 @@ class Camera_feed_identified():
                     
                     if id != 'unknown':
                         name = self.get_name(int(id))
-                        if name is not None:
+                        if name is not None:       
                             if self.check_duplicate_attendance(id)==False:
-                                name=self.perform_attendance(id,name)
-                                
-                                
+                                name=self.perform_attendance(id,name)                               
                             else:                            
                                 cv2.putText(frame, "Ban da check in roi", (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                                 name = 'Da diem danh'

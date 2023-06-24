@@ -12,6 +12,8 @@ urlpatterns = [
     path('voters/update', views.updateVoter, name="updateVoter"),
     path('delete-all/', views.deleteAllVoters, name='deleteAllVoters'),
     path('update-acc/', views.updateAcc, name='updateAcc'),
+    path('get_vote_progress/', views.get_vote_progress, name='get_vote_progress'),
+    path('voters_result/', views.voter_result, name='voters_result'),
 
     # * Position
     path('position/view', views.view_position_by_id, name="viewPosition"),

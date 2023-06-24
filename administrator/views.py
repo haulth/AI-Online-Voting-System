@@ -192,19 +192,41 @@ def updateAcc(request):
 
 def save_vote_time(request):
     if request.method == 'POST':
-        vote_time_str = request.POST.get('vote_time')
-        vote_datetime = datetime.strptime(vote_time_str, '%Y-%m-%dT%H:%M')
-        vote_time_str = vote_datetime.strftime('%Y-%m-%dT%H:%M')
-        with open('vote_time.txt', 'w') as f:
-            f.write(vote_time_str)
-        return JsonResponse({'success': True})
-    return JsonResponse({'success': False})
+        # nếu không có thời gian bầu cử thì thông báo lỗi
+        if not request.POST.get('vote_time_start') or not request.POST.get('vote_time_end'):
+            messages.error(request, 'Vui lòng chọn thời gian bầu cử.')
+            return redirect(reverse('viewPositions'))
+        vote_time_start = request.POST.get('vote_time_start')
+        vote_time_end = request.POST.get('vote_time_end')
+        vote_datetime_start = datetime.strptime(vote_time_start, '%Y-%m-%dT%H:%M')
+        vote_time_str_start = vote_datetime_start.strftime('%Y-%m-%dT%H:%M')
+        vote_datetime_end = datetime.strptime(vote_time_end, '%Y-%m-%dT%H:%M')
+        vote_time_str_end = vote_datetime_end.strftime('%Y-%m-%dT%H:%M')
+        #nếu thời gian kết thúc bầu cử nhỏ hơn thời gian bắt đầu bầu cử thì thông báo lỗi
+        if vote_datetime_end < vote_datetime_start:
+            messages.error(request, 'Thời gian kết thúc bầu cử phải lớn hơn thời gian bắt đầu bầu cử.')
+            return redirect(reverse('viewPositions'))
+        with open('vote_time_start.txt', 'w') as f:
+            f.write(vote_time_str_start)
+        with open('vote_time_end.txt', 'w') as f:
+            f.write(vote_time_str_end)
+        messages.success(request, 'Cập nhật thời gian bầu cử thành công.')
+
+        return redirect(reverse('viewPositions'))
+    else:
+        messages.error(request, 'Cập nhật thời gian bầu cử không thành công.')
+        return redirect(reverse('viewPositions'))
+        
+    
+
 
 
 def delete_vote_time(request):
     if request.method == 'POST':
         # Xóa thông tin thời gian bầu cử trong file
-        with open('vote_time.txt', 'w') as f:
+        with open('vote_time_start.txt', 'w') as f:
+            f.write('')
+        with open('vote_time_end.txt', 'w') as f:
             f.write('')
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
@@ -296,21 +318,49 @@ class PrintView(PDFView):
 # thông tin về các vị trí và các ứng viên hiển thị lên bảng
 
 def infoVoter(request):
-    with open('./vote_time.txt', 'r') as f:
-        vote_time_str = f.read().strip()
-    # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
-    vote_time = datetime.fromisoformat(vote_time_str)
+    try:
+        with open('./vote_time_start.txt', 'r') as f:
+            vote_time_str_start = f.read().strip()
+        # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
+        vote_time_start = datetime.fromisoformat(vote_time_str_start)
+        with open('./vote_time_end.txt', 'r') as f:
+            vote_time_str_end = f.read().strip()
+        # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
+        vote_time_end = datetime.fromisoformat(vote_time_str_end)
+        
+        # Tính thời gian còn lại đến khi kết thúc bình chọn
+        if vote_time_start > datetime.now():
+            print ('chua bat dau')
+            timed = 0
+            time_left_str = "00:00:00"
+            messages.error(request, "Bình chọn chưa bắt đầu")
+            
+        # Nếu thời gian bình chọn đã bắt đầu
+        elif vote_time_start < datetime.now() < vote_time_end:
+            print ('da bat dau',vote_time_end - datetime.now())
+            time_left = vote_time_end - datetime.now()
+            timed = 1
+            hours, remainder = divmod(time_left.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
 
-    # Tính thời gian còn lại đến khi kết thúc bình chọn
-    time_left = vote_time - datetime.now()
-
-    # Tính toán số giờ, phút và giây từ đối tượng timedelta
-    hours, remainder = divmod(time_left.seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-
-    # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
-    time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
-    print(time_left_str)
+            # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
+            time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
+        elif vote_time_end < datetime.now():
+            print ('da ket thuc')
+            time_left_str = "00:00:00"
+            timed = 0
+            messages.error(request, "Bình chọn đã kết thúc")
+            
+        else:
+            print ('chua bat dau')
+            time_left_str = "00:00:00"
+            timed = 0
+            messages.error(request, "Bình chọn chưa bắt đầu")
+            
+    except Exception as e:
+        print (e)
+        time_left_str = "-1"
+        messages.error(request, "Bình chọn chưa bắt đầu")
 
     positions = Position.objects.all().order_by('priority')
     candidates = Candidate.objects.all()
@@ -333,8 +383,11 @@ def infoVoter(request):
 
         chart_data[position] = {
             'candidates': candidates_data, 'pos_id': position.id}
+    pc=((voted_voters.count()/voters.count())*100)
 
     context = {
+        'percent': round(pc, 2),
+        'time_left': timed,  # Thời gian còn lại đến khi kết thúc bình chọn
         'time_left_str': time_left_str,
         'position_count': positions.count(),
         'candidate_count': candidates.count(),
@@ -345,6 +398,100 @@ def infoVoter(request):
     }
     return render(request, 'admin/infomation_votes.html', context)
 
+def voter_result(request):
+    try:
+        with open('./vote_time_start.txt', 'r') as f:
+            vote_time_str_start = f.read().strip()
+        # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
+        vote_time_start = datetime.fromisoformat(vote_time_str_start)
+        with open('./vote_time_end.txt', 'r') as f:
+            vote_time_str_end = f.read().strip()
+        # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
+        vote_time_end = datetime.fromisoformat(vote_time_str_end)
+
+        # Tính thời gian còn lại đến khi kết thúc bình chọn
+        if vote_time_start > datetime.now():
+            print ('chua bat dau')
+            time_left_str = "00:00:00"
+            messages.error(request, "Bình chọn chưa bắt đầu")
+            
+        # Nếu thời gian bình chọn đã bắt đầu
+        elif vote_time_start < datetime.now() < vote_time_end:
+            print ('da bat dau',vote_time_end - datetime.now())
+            time_left = vote_time_end - datetime.now()
+            hours, remainder = divmod(time_left.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+
+            # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
+            time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
+        elif vote_time_end < datetime.now():
+            print ('da ket thuc')
+            time_left_str = "00:00:00"
+            messages.error(request, "Bình chọn đã kết thúc")
+            
+        else:
+            print ('chua bat dau')
+            time_left_str = "00:00:00"
+            messages.error(request, "Bình chọn chưa bắt đầu")
+            
+    except Exception as e:
+        print (e)
+        time_left_str = "-1"
+        messages.error(request, "Bình chọn chưa bắt đầu")
+
+    positions = Position.objects.all().order_by('priority')
+    candidates = Candidate.objects.all()
+    voters = Voter.objects.all()
+    voted_voters = Voter.objects.filter(voted=1)
+    chart_data = {}
+
+    for position in positions:
+        if position.max_vote < 1:
+            continue
+
+        total_votes = Votes.objects.filter(
+            candidate__position=position).count()
+        candidates_data = []
+        for candidate in Candidate.objects.filter(position=position):
+            votes = Votes.objects.filter(candidate=candidate).count()
+            percent = (votes / total_votes) * 100 if total_votes > 0 else 0
+            candidates_data.append(
+                {'name': candidate.fullname, 'votes': votes, 'percent': percent})
+
+        chart_data[position] = {
+            'candidates': candidates_data, 'pos_id': position.id}
+    pc=((voted_voters.count()/voters.count())*100)
+
+    context = {
+        'percent': round(pc, 2),
+        'time_left': time_left.days,  # Thời gian còn lại đến khi kết thúc bình chọn
+        'time_left_str': time_left_str,
+        'position_count': positions.count(),
+        'candidate_count': candidates.count(),
+        'voters_count': voters.count(),
+        'voted_voters_count': voted_voters.count(),
+        'chart_data': chart_data,
+        'page_title': "Kết quả bầu cử"
+    }
+    return render(request, 'admin/voters_result.html', context)
+
+def get_vote_progress(request):
+    # Logic để tính toán lượt bỏ phiếu và phần trăm
+    voters = Voter.objects.all()
+    voted_voters = Voter.objects.filter(voted=1)
+    voters_count = voters.count()
+    voted_voters_count = voted_voters.count()
+
+    # Tính toán phần trăm
+    percent = (voted_voters_count / voters_count) * 100
+
+    # Trả về dữ liệu dưới dạng JSON
+    data = {
+        'percent': round(percent, 2),
+        'voters_count': voters_count,
+        'voted_voters_count': voted_voters_count
+    }
+    return JsonResponse(data)
 
 def dashboard(request):
     positions = Position.objects.all().order_by('priority')
@@ -489,6 +636,13 @@ def deleteVoter(request):
             folder_path = os.path.join('static', 'data', str(admin.get_id()))
             full_path = os.path.abspath(folder_path)
             shutil.rmtree(full_path)
+        except Exception as e:
+            print(e)
+        try:
+            image_path = os.path.join('static', 'image','qrcode', str(admin.get_id()),'.png')
+            full_path = os.path.abspath(image_path)
+            os.remove(full_path)
+            
         except Exception as e:
             print(e)
         try:

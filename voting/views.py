@@ -207,20 +207,46 @@ def dashboard(request):
             candidates_data.append({'name': candidate.fullname, 'votes': votes, 'percent': percent})
 
         chart_data[position] = {'candidates': candidates_data, 'pos_id': position.id}
-    with open('vote_time.txt', 'r') as f:
-        vote_time_str = f.read().strip()
-    # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
-    vote_time = datetime.fromisoformat(vote_time_str)
+    try:
+        with open('./vote_time_start.txt', 'r') as f:
+            vote_time_str_start = f.read().strip()
+        # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
+        vote_time_start = datetime.fromisoformat(vote_time_str_start)
+        with open('./vote_time_end.txt', 'r') as f:
+            vote_time_str_end = f.read().strip()
+        # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
+        vote_time_end = datetime.fromisoformat(vote_time_str_end)
 
-    # Tính thời gian còn lại đến khi kết thúc bình chọn
-    time_left = vote_time - datetime.now()
+        # Tính thời gian còn lại đến khi kết thúc bình chọn
+        if vote_time_start > datetime.now():
+            print ('chua bat dau')
+            time_left_str = "-1"
+            messages.error(request, "Bình chọn chưa bắt đầu")
+            
+        # Nếu thời gian bình chọn đã bắt đầu
+        elif vote_time_start < datetime.now() < vote_time_end:
+            print ('da bat dau',vote_time_end - datetime.now())
+            time_left = vote_time_end - datetime.now()
+            hours, remainder = divmod(time_left.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
 
-    # Tính toán số giờ, phút và giây từ đối tượng timedelta
-    hours, remainder = divmod(time_left.seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-
-    # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
-    time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
+            # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
+            time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
+        elif vote_time_end < datetime.now():
+            print ('da ket thuc')
+            time_left_str = "00:00:00"
+            messages.error(request, "Bình chọn đã kết thúc")
+            
+        else:
+            print ('chua bat dau')
+            time_left_str = "-1"
+            messages.error(request, "Bình chọn chưa bắt đầu")
+            
+    except Exception as e:
+        print (e)
+        time_left_str = "-1"
+        messages.error(request, "Bình chọn chưa bắt đầu")
+        
 
     user = request.user
     # * Check if this voter has been verified
@@ -363,21 +389,48 @@ def verify_otp(request):
 # show form bình chọn và hiển thị thời gian
 
 def show_ballot(request):
-    with open('vote_time.txt', 'r') as f:
-        vote_time_str = f.read().strip()
+    try:
+        with open('./vote_time_start.txt', 'r') as f:
+            vote_time_str_start = f.read().strip()
+        # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
+        vote_time_start = datetime.fromisoformat(vote_time_str_start)
+        with open('./vote_time_end.txt', 'r') as f:
+            vote_time_str_end = f.read().strip()
+        # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
+        vote_time_end = datetime.fromisoformat(vote_time_str_end)
 
-    # Chuyển đổi thời gian kết thúc bình chọn từ định dạng string sang datetime object
-    vote_time = datetime.fromisoformat(vote_time_str)
+        # Tính thời gian còn lại đến khi kết thúc bình chọn
 
-    # Tính thời gian còn lại đến khi kết thúc bình chọn
-    time_left = vote_time - datetime.now()
+        if vote_time_start > datetime.now():
+            print ('chua bat dau')
+            time_left_str = "-1"
+            messages.error(request, "Bình chọn chưa bắt đầu")
+            
+        # Nếu thời gian bình chọn đã bắt đầu
+        elif vote_time_start < datetime.now() < vote_time_end:
+            print ('da bat dau',vote_time_end - datetime.now())
+            time_left = vote_time_end - datetime.now()
+            hours, remainder = divmod(time_left.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
 
+            # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
+            time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
+        elif vote_time_end < datetime.now():
+            print ('da ket thuc')
+            time_left_str = "00:00:00"
+            messages.error(request, "Bình chọn đã kết thúc")
+            
+        else:
+            print ('chua bat dau')
+            time_left_str = "-1"
+            messages.error(request, "Bình chọn chưa bắt đầu")
+            
+    except Exception as e:
+        print(e)
+        messages.error(request, "Bình chọn đến thời hạn")
+        
     # Tính toán số giờ, phút và giây từ đối tượng timedelta
-    hours, remainder = divmod(time_left.seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
 
-    # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
-    time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
     # # Trả về time_left để hiển thị countdown trên giao diện
     if request.user.voter.voted:
         messages.error(request, "Bạn đã bình chọn rồi")
