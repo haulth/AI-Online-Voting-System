@@ -95,10 +95,18 @@
       countdownElem.innerHTML = "Thời gian còn lại: " + hours + " giờ " + minutes + " phút " + seconds + " giây";
 
       // Kiểm tra nếu thời gian còn lại đã hết, dừng đồng hồ countdown
-      if (timeLeft < 0) {
+      if (timeLeft ==0) {
         clearInterval(countdownInterval);
         //elements id = countdown-timer ẩn đi
         countdownElem.innerHTML = "<span style='color: red; text-align:center;'>Bình chọn đã kết thúc</span>";
+        //căn lề giữa
+
+        //countdownElem.innerHTML = "<span style='color: red;'>Bình chọn đã kết thúc</span>";
+      }
+      if (timeLeft <0) {
+        clearInterval(countdownInterval);
+        //elements id = countdown-timer ẩn đi
+        countdownElem.innerHTML = "<span style='color: red; text-align:center;'>Bình chọn chưa bắt đầu</span>";
         //căn lề giữa
 
         //countdownElem.innerHTML = "<span style='color: red;'>Bình chọn đã kết thúc</span>";
@@ -121,9 +129,12 @@
             <h4 class="box-title" style="text-align: center; color: blueviolet;">
               Tổng số lá phiếu: {{ voted_voters_count }}/{{ voters_count }}
             </h4>
+            
             {% if time_left > 0 %}
             <h6 class="box-title" style="text-align: center; color: rgb(62, 113, 206);">Thời gian bỏ phiếu:
               {{ time_left_str }}</h6>
+            {% elif time_left < 0 %}
+              <h6 class="box-title" style="text-align: center; color: rgb(62, 113, 206);">Bình chọn chưa bắt đầu</h6>
             {% else %}
             <h6 class="box-title" style="text-align: center; color: rgb(62, 113, 206);">Hết thời gian bỏ phiếu</h6>
             {% endif %}

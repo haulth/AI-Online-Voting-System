@@ -331,7 +331,7 @@ def infoVoter(request):
         # Tính thời gian còn lại đến khi kết thúc bình chọn
         if vote_time_start > datetime.now():
             print ('chua bat dau')
-            timed = 0
+            timed = -1
             time_left_str = "00:00:00"
             messages.error(request, "Bình chọn chưa bắt đầu")
             
@@ -354,12 +354,13 @@ def infoVoter(request):
         else:
             print ('chua bat dau')
             time_left_str = "00:00:00"
-            timed = 0
+            timed = -1
             messages.error(request, "Bình chọn chưa bắt đầu")
             
     except Exception as e:
         print (e)
         time_left_str = "-1"
+        timed = -1
         messages.error(request, "Bình chọn chưa bắt đầu")
 
     positions = Position.objects.all().order_by('priority')
