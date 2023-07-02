@@ -67,7 +67,7 @@
                     </button>
                 </div>
 
-                <table class="table" id="training-log">
+                <table class="table" id="example1">
 
                     <tbody>
                         {% for train_datetime in train_datetimes %}
@@ -221,7 +221,7 @@
 
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
-                    const trainingLog = document.getElementById('training-log');
+                    const trainingLog = document.getElementById('example1');
 
                     // Gửi yêu cầu lấy thông tin ngày giờ train
                     fetch('/administrator/timetrain/')
@@ -246,7 +246,7 @@
                 function startTraining() {
                     const trainButton = document.getElementById('train-btn');
                     const trainingStatus = document.getElementById('training-status');
-                    const trainingLog = document.getElementById('training-log');
+                    const trainingLog = document.getElementById('example1');
                     const lb = document.getElementById('lb');
 
                     // Ẩn nút Train và hiển thị thông báo Training

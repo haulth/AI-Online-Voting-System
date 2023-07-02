@@ -235,7 +235,7 @@ def train(request):
         file.write(f'Huấn luyện vào ngày: {date_str} {time_str} Có {count} người được đào tạo\n')
     # Return a success response
     messages.success(request, 'Train dữ liệu thành công.')
-    return HttpResponse('ok luon')
+    return HttpResponse('success')
 
 def create_qrcode(text):
     # Tạo đối tượng QR code
