@@ -12,14 +12,38 @@ import os
 from administrator.utils import *
 import numpy as np
 # Create your views here.
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+
+
+@login_required
+def change_pass(request):
+    if request.method == 'POST':
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']     
+        user = request.user       
+        # Kiểm tra mật khẩu hiện tại
+        if user.check_password(current_password):
+            # Thay đổi mật khẩu mới
+            user.set_password(new_password)
+            user.save()
+            # Cập nhật session auth
+            update_session_auth_hash(request, user)
+            # Đăng xuất người dùng
+            messages.success(request, 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại.')
+            logout_url = reverse('account_logout')
+            return redirect(logout_url)
+        else:
+            messages.error(request, 'Mật khẩu hiện tại không chính xác.')
+            return redirect('bio.html')
+
+    return render(request, 'bio.html')
 
 def login_face(request):
     return render(request, 'voting/login_face.html')
 
 def upload_image(request):
-    print('oke2')
     if request.method == 'POST':
-        print('oke1')
         image_base64 = request.POST.get('image')
         print (image_base64)
         image_data = base64.b64decode(image_base64.split(',')[-1])
@@ -33,7 +57,6 @@ def upload_image(request):
             f.write(image_data)
         #đọc file ảnh
         img = cv2.imread(os.path.join(path, image_name))
-        print('oke')
         #show ảnh
         cv2.imshow('image', img)
         cv2.waitKey(0)
@@ -121,53 +144,6 @@ def account_login(request):
             return JsonResponse({'message': 'Image uploaded successfully'})
 
     return render(request, "voting/login.html", context)
-
-# def account_register(request):
-#     userForm = CustomUserForm(request.POST or None)
-#     voterForm = VoterForm(request.POST or None)
-    
-#     context = {
-#         'form1': userForm,
-#         'form2': voterForm
-#     }
-    
-#     if request.method == 'POST':
-#         if userForm.is_valid() and voterForm.is_valid():
-#             user = userForm.save(commit=False)
-#             voter = voterForm.save(commit=False)
-#             voter.admin = user
-#             user.save()
-#             voter.save()
-#             user_id = user.id
-#             context['user_id'] = user_id  # Thêm user_id vào context
-            
-#             return JsonResponse({'success': True, 'user_id': user_id})
-#         else:
-#             return JsonResponse({'success': False, 'errors': userForm.errors})
-    
-#     return render(request, "ad_reg.html", context)
-
-# def create_folder(request):
-#     folder_name = request.GET.get('name')
-#     folder_path = os.path.join('./static/data/', folder_name)
-#     if not os.path.exists(folder_path):
-#         os.makedirs(folder_path)
-#         print(folder_name)
-#     return render(request, 'upload.html',{'folder_name': folder_name})
-    
-# def upload_images(request):
-#     if request.method == 'POST':
-#         folder_name = request.POST.get('folder_name')
-#         folder_path = os.path.join('./static/data/', folder_name)
-        
-#         # Lưu hình ảnh vào thư mục
-#         images = request.FILES.getlist('images[]')
-#         for i, image_file in enumerate(images):
-#             with open(os.path.join(folder_path, image_file.name), 'wb') as f:
-#                 f.write(image_file.read())
-        
-#         messages.success(request, 'Đăng ký tài khoản thành công.')
-#         return redirect('account_register')
 
 
 

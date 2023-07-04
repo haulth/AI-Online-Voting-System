@@ -465,7 +465,7 @@ def voter_result(request):
 
     context = {
         'percent': round(pc, 2),
-        'time_left': time_left.days,  # Thời gian còn lại đến khi kết thúc bình chọn
+        #'time_left': time_left.days,  # Thời gian còn lại đến khi kết thúc bình chọn
         'time_left_str': time_left_str,
         'position_count': positions.count(),
         'candidate_count': candidates.count(),
@@ -536,7 +536,7 @@ def voters(request):
         'form1': userForm,
         'form2': voterForm,
         'voters': voters,
-        'page_title': 'Danh Sách Bỏ Phiếu'
+        'page_title': 'Danh Sách Cử Tri'
     }
     if request.method == 'POST':
         if userForm.is_valid() and voterForm.is_valid():

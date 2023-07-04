@@ -1,30 +1,47 @@
 <div class="modal fade" id="profile">
   <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title"><b>Thông Tin Quản Trị Viên</b></h4>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><b>Đổi mật khẩu</b></h4>
+      </div>
+      <!-- đổi mật khẩu -->
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'change_pass' %}" enctype="multipart/form-data" id="changePasswordForm">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="current-password" class="col-sm-3 control-label">Mật khẩu hiện tại:</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control" id="current-password" name="current_password" required>
+            </div>
           </div>
-          <div class="modal-body">
-            <form class="form-horizontal" method="POST" action="profile_update.php?return={% url 'adminDashboard' %}" enctype="multipart/form-data">
-              
-              <!-- Form For Update Goes Here -->
-              
-              <h5 id="texth5">Bạn không thể thay đổi thông tin tài khoản. Hãy liên hệ Admin để biết thêm chi tiết</h5>
+          <div class="form-group">
+            <label for="new-password" class="col-sm-3 control-label">Mật khẩu mới:</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control" id="new-password" name="new_password" required>
+            </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Đóng</button>
-            <button type="submit" class="btn btn-success btn-flat" name="save" id="savetk"><i class="fa fa-check-square-o"></i> Lưu</button>
-            </form>
+            <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i
+                class="fa fa-close"></i> Đóng</button>
+            <button type="submit" class="btn btn-success btn-flat" name="save" id="savetk"><i
+                class="fa fa-check-square-o"></i> Lưu</button>
           </div>
+        </form>
       </div>
+      <!-- kết thúc đổi mật khẩu -->
+    </div>
   </div>
-</div> 
+</div>
+
 <script>
-  //lock button id =savetk
-  document.getElementById("savetk").disabled = true;
-  //align center texth5 and color red
-  document.getElementById("texth5").style.color = "red";
-  document.getElementById("texth5").style.textAlign = "center";
+  $(document).ready(function () {
+    $('#profile').on('show.bs.modal', function (event) {
+      var modal = $(this);
+      //var is_admin = {% if request.user.is_superuser %}true{% else %}false{% endif %};
+
+      modal.find('#changePasswordForm').attr('action', "{% url 'change_pass' %}");
+
+  });
 </script>

@@ -3,7 +3,7 @@
 
 <div class="card shadow m-5">
     <div class="card-body">
-       
+
 
         <div class="container-fluid">
             <form method="post" name="signupForm" id="signup-form" onsubmit="return checkpassword()">
@@ -11,7 +11,7 @@
                 <div class="form-row">
                     <div class="col-sm-12">
                         <div class="form-group text-center">
-                            <h2 id="lb" >Thời gian huấn luyện gần đây:</h2>
+                            <h2 id="lb">Thời gian huấn luyện gần đây:</h2>
                         </div>
                     </div>
                 </div>
@@ -29,21 +29,24 @@
                         0% {
                             left: -100%;
                         }
+
                         25% {
                             left: -50%;
                         }
+
                         50% {
                             left: 0%;
                         }
+
                         75% {
                             left: 50%;
                         }
-                    
+
                         100% {
                             left: 100%;
                         }
                     }
-                    
+
                     .progress {
                         position: relative;
                         height: 20px;
@@ -51,7 +54,7 @@
                         border-radius: 10px;
                         overflow: hidden;
                     }
-                    
+
                     .progress-bar {
                         position: absolute;
                         height: 100%;
@@ -59,10 +62,11 @@
                         background-color: #008cdd;
                         animation: infinite 2s load-loop linear;
                     }
-                
                 </style>
+
                 <div class="custom-btn-container">
-                    <button type="button" class="custom-btn btn" name="train-btn" id="train-btn" onclick="startTraining()">
+                    <button type="button" class="custom-btn btn" name="train-btn" id="train-btn"
+                        onclick="startTraining()">
                         <span>Huấn Luyện</span>
                     </button>
                 </div>
@@ -82,28 +86,33 @@
                     </tbody>
                 </table>
 
-                <style>  
+                <style>
+                    .datetime {
+                        padding-left: 20px;
+                    }
+
                     .table {
                         width: 100%;
                         border-collapse: collapse;
                     }
-                
-                    .table td, .table th {
+
+                    .table td,
+                    .table th {
                         padding: 10px;
                         text-align: left;
                         border: 1px solid #ddd;
                         text-align: center;
                     }
-                
+
                     .table th {
                         background-color: #f2f2f2;
                         font-weight: bold;
                     }
-                
+
                     .table tr:nth-child(even) {
                         background-color: #f9f9f9;
                     }
-                
+
                     .table tr:hover {
                         background-color: #f5f5f5;
                     }
@@ -129,7 +138,7 @@
                             7px 7px 20px 0px rgba(0, 0, 0, .1),
                             4px 4px 5px 0px rgba(0, 0, 0, .1);
                         outline: none;
-                        
+
                     }
 
                     .btn {
@@ -137,7 +146,7 @@
                         line-height: 42px;
                         padding: 0;
                         border: none;
-                        
+
                     }
 
                     .btn span {
@@ -222,6 +231,7 @@
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     const trainingLog = document.getElementById('example1');
+                    let clickCount = 0;
 
                     // Gửi yêu cầu lấy thông tin ngày giờ train
                     fetch('/administrator/timetrain/')
@@ -237,12 +247,40 @@
                             }
                             trainingLog.innerHTML = html;
                             trainingLog.style.display = 'table';
+
+                            // Ẩn tất cả các hàng trừ hàng cuối cùng
+                            const rows = trainingLog.getElementsByTagName('tr');
+                            const lastRowIndex = rows.length - 1;
+                            for (let i = 0; i < lastRowIndex; i++) {
+                                rows[i].style.display = 'none';
+                            }
+
+                            // Thêm sự kiện click vào khung để hiển thị và ẩn các hàng
+                            trainingLog.addEventListener('click', function () {
+                                clickCount++;
+                                for (let i = 0; i < lastRowIndex; i++) {
+                                    if (clickCount % 2 === 1) {
+                                        rows[i].style.display = '';
+                                    } else {
+                                        rows[i].style.display = 'none';
+                                    }
+                                }
+                                // Cập nhật trạng thái mũi tên
+                                if (clickCount % 2 === 1) {
+                                    rows[lastRowIndex].classList.add('arrow-up');
+                                } else {
+                                    rows[lastRowIndex].classList.remove('arrow-up');
+                                }
+                            });
                         })
                         .catch(error => {
                             console.error('Lỗi trong quá trình lấy thông tin ngày giờ train:', error);
                             // Xử lý lỗi (ví dụ: hiển thị thông báo lỗi cho người dùng)
                         });
                 });
+
+
+
                 function startTraining() {
                     const trainButton = document.getElementById('train-btn');
                     const trainingStatus = document.getElementById('training-status');
@@ -256,7 +294,7 @@
                     //id lb đổi text
                     lb.innerHTML = 'Đang train dữ liệu...';
 
-                    
+
 
                     // Gửi yêu cầu train dữ liệu
                     fetch('/administrator/train/')

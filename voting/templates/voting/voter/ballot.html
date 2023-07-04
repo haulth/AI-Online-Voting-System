@@ -4,96 +4,92 @@
 
 <section class="content">
   <h1 class="page-header text-center title"><b>{{ TITLE }}</b></h1>
-  
+
   <p id="countdown-timer" style="text-align: center; color: blue;">
     <span id="countdown"></span>
   </p>
 
-<script>
-  var timeLeftStr = '{{ time_left_str }}';
-  console.log(timeLeftStr)
+  <script>
+    var timeLeft = 0;
+    var timeLeftStr = '{{ time_left_str }}';
+    console.log(timeLeftStr);
+
     var timeLeftParts = timeLeftStr.split(':');
     var hoursLeft = parseInt(timeLeftParts[0]);
     var minutesLeft = parseInt(timeLeftParts[1]);
     var secondsLeft = parseInt(timeLeftParts[2]);
+
     var endTime = new Date();
     endTime.setHours(endTime.getHours() + hoursLeft);
     endTime.setMinutes(endTime.getMinutes() + minutesLeft);
     endTime.setSeconds(endTime.getSeconds() + secondsLeft);
 
     // Cập nhật đồng hồ countdown mỗi giây
-    var countdownInterval = setInterval(function() {
-        var now = new Date().getTime();
-        var timeLeft = endTime - now;
+    var countdownInterval = setInterval(function () {
+      var now = new Date().getTime();
+      var timeLeft = endTime - now;
 
-        // Tính toán giờ, phút, giây còn lại
-        var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+      // Tính toán giờ, phút, giây còn lại
+      var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        // Hiển thị đồng hồ countdown
-        if (timeLeft > 0) {
-          var countdownElem = document.getElementById('countdown');
-          countdownElem.innerHTML = "Thời gian còn lại: "+hours + " giờ " + minutes + " phút " + seconds + " giây";
-        }
-        if (timeLeft < 0) {
-          
-          var countdownElem = document.getElementById('countdown');
-            //elements id = countdown-timer ẩn đi
-          countdownElem.innerHTML = "<span style='color: red;'>Bình chọn đã kết thúc</span>";
-          clearInterval(countdownInterval);
-        }
-        else {
-
-          var countdownElem = document.getElementById('countdown');
-          countdownElem.innerHTML = "<span style='color: red;'>Bình chọn chưa bắt đầu</span>";
-          clearInterval(countdownInterval);
-        }
+      // Hiển thị đồng hồ countdown
+      var countdownElem = document.getElementById('countdown');
+      if (timeLeft > 0) {
+        countdownElem.innerHTML = "Thời gian còn lại: " + hours + " giờ " + minutes + " phút " + seconds + " giây";
+      } else if (timeLeft < 0) {
+        countdownElem.innerHTML = "<span style='color: red;'>Bình chọn đã kết thúc</span>";
+        clearInterval(countdownInterval);
+      } else {
+        countdownElem.innerHTML = "<span style='color: red;'>Bình chọn chưa bắt đầu</span>";
+        clearInterval(countdownInterval);
+      }
     }, 1000);
-  //chặn tải lại trang
-  function disableF5(e) {
-    if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82) {
-      e.preventDefault();
+
+    //chặn tải lại trang
+    function disableF5(e) {
+      if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82) {
+        e.preventDefault();
+      }
     }
-  }
 
-  function block(){
-    // Sử dụng beforeunload để hỏi người dùng có muốn rời khỏi trang không
-    window.addEventListener('beforeunload', function(e) {
-      e.preventDefault();
-      e.returnValue = '';
-    });
-    // Sử dụng unload để chuyển hướng người dùng đến trang khác khi họ cố tải lại trang
-    window.addEventListener('unload', function(e) {
-      // chuyển về trang đăng nhập
-      window.location.href = "{% url 'account_logout' %}";
+    function block() {
+      // Sử dụng beforeunload để hỏi người dùng có muốn rời khỏi trang không
+      window.addEventListener('beforeunload', function (e) {
+        e.preventDefault();
+        e.returnValue = '';
       });
-    window.history.replaceState(null, null, window.location.href);
-  }
+      // Sử dụng unload để chuyển hướng người dùng đến trang khác khi họ cố tải lại trang
+      window.addEventListener('unload', function (e) {
+        // chuyển về trang đăng nhập
+        window.location.href = "{% url 'account_logout' %}";
+      });
+      window.history.replaceState(null, null, window.location.href);
+    }
 
-</script>
+  </script>
 
-<div class="row">
+  <div class="row">
 
-<div class="col-sm-10 col-sm-offset-1">
+    <div class="col-sm-10 col-sm-offset-1">
 
-<div class="alert alert-danger alert-dismissible" id="alert" style="display:none;">
-<button type="button" class="close" data-dismiss="alert"
-aria-hidden="true">&times;</button>
-<span class="message"></span>
-</div>
+      <div class="alert alert-danger alert-dismissible" id="alert" style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span class="message"></span>
+      </div>
 
 
-<form method="POST" id="ballotForm" action="{% url 'submit_ballot' %}">
-  {% csrf_token %}
-  {{ ballot|safe }}
-  <div class="text-center">
-    <button type="button" class="btn btn-success btn-flat" id="preview"><i
-            class="fa fa-file-text"></i> Xem Lại</button>
-    <button type="submit" class="btn btn-primary btn-flat" id="voting-form-submit" name="submit_vote"><i
-            class="fa fa-check-square-o"></i> Hoàn Thành </button>
-</div>
-</form>
+      <form method="POST" id="ballotForm" action="{% url 'submit_ballot' %}">
+        {% csrf_token %}
+        {{ ballot|safe }}
+        <div class="text-center">
+          <button type="button" class="btn btn-success btn-flat" id="preview"><i class="fa fa-file-text"></i> Xem
+            Lại</button>
+          <button type="submit" class="btn btn-primary btn-flat" id="voting-form-submit" name="submit_vote"><i
+              class="fa fa-check-square-o"></i> Hoàn Thành </button>
+        </div>
+      </form>
     </div>
   </div>
 </section>
@@ -109,123 +105,123 @@ aria-hidden="true">&times;</button>
   //if x exits, hide elements id = preview and id = voting-form-submit
 
 
-  if (timeLeftStr  == "00:00:00") {
-    alert('Thời gian bình chọn của bạn đã hết.');    
+  if (timeLeftStr == "00:00:00") {
+    alert('Thời gian bình chọn của bạn đã hết.');
     lockVoting();
   }
-  else if (timeLeftStr  == "-1") {
-    alert('Chưa đến thời gian bình chọn.');    
+  else if (timeLeftStr == "-1") {
+    alert('Chưa đến thời gian bình chọn.');
     lockVoting();
   }
   else {
     alert('Chào mừng bạn đến cuộc bình chọn, thời gian bình chọn của bạn là {{ time_left_str }}.');
-      
-    }
-    
 
-    //set countdown timer
-    window.onload = function () {
-      var fiveMinutes = 60 * 1,
-          display = document.querySelector('#time');
-      // startTimer(fiveMinutes, display);
-      
+  }
+
+
+  //set countdown timer
+  window.onload = function () {
+    var fiveMinutes = 60 * 1,
+      display = document.querySelector('#time');
+    // startTimer(fiveMinutes, display);
+
 
   }
   if (timeLeft < 0) {
     clearInterval(countdownInterval);
     //elements id = countdown-timer ẩn đi
-    document.getElementById("countdown-timer").innerHTML = "<span style='color: red;'>Bình chọn đã kết thúc</span>";   
-    lockVoting();        
+    document.getElementById("countdown-timer").innerHTML = "<span style='color: red;'>Bình chọn đã kết thúc</span>";
+    lockVoting();
     //countdownElem.innerHTML = "<span style='color: red;'>Bình chọn đã kết thúc</span>";
 
-}
-  if (timeLeftStr=="-1"){
+  }
+  if (timeLeftStr == "-1") {
     lockVoting();
     clearInterval(countdownInterval);
     //elements id = countdown-timer ẩn đi
-    document.getElementById("countdown-timer").innerHTML = "<span style='color: yellow;'>Chưa đến thời gian bình chọn</span>";  
+    document.getElementById("countdown-timer").innerHTML = "<span style='color: yellow;'>Chưa đến thời gian bình chọn</span>";
   }
 
   function lockVoting() {
     //find all elements in template
-   
+
 
     var form = document.getElementById("ballotForm");
     var elements = form.elements;
     for (var i = 0, len = elements.length; i < len; ++i) {
-        //nếu elements id = refresh thì không ẩn
-        if (elements[i].id != "refresh") {
-          
+      //nếu elements id = refresh thì không ẩn
+      if (elements[i].id != "refresh") {
+
         //ẩn elements
-          elements[i].style.display = 'none';
-          elements[i].disabled = true;
-        }
-        
+        elements[i].style.display = 'none';
+        elements[i].disabled = true;
+      }
+
     }
-    
+
   }
 
-  $(function() {
-      $('.content').iCheck({
-          checkboxClass: 'icheckbox_flat-green',
-          radioClass: 'iradio_flat-green'
-      });
+  $(function () {
+    $('.content').iCheck({
+      checkboxClass: 'icheckbox_flat-green',
+      radioClass: 'iradio_flat-green'
+    });
 
-      $(document).on('click', '.reset', function(e) {
-          e.preventDefault();
-          var desc = $(this).data('desc');
-          $('.' + desc).iCheck('uncheck');
-      });
+    $(document).on('click', '.reset', function (e) {
+      e.preventDefault();
+      var desc = $(this).data('desc');
+      $('.' + desc).iCheck('uncheck');
+    });
 
-      $(document).on('click', '.platform', function(e) {
-          e.preventDefault();
-          $('#bio').modal('show');
-          var platform = $(this).data('bio');
-          var fullname = $(this).data('fullname');
-          $('.candidate').html(fullname);
-          $('#plat_view').html(platform);
-      });
+    $(document).on('click', '.platform', function (e) {
+      e.preventDefault();
+      $('#bio').modal('show');
+      var platform = $(this).data('bio');
+      var fullname = $(this).data('fullname');
+      $('.candidate').html(fullname);
+      $('#plat_view').html(platform);
+    });
 
-      $('#preview').click(function(e) {
-          e.preventDefault();
-          var form = $('#ballotForm').serialize();
-          console.log(form);
-          if (form.search("&") < 0 || form == '') {
-              toastr.error('Bạn phải bỏ phiếu cho ít nhất một đại biểu', "Lỗi xem trước");
-          } else {
-              $.ajax({
-                  type: 'POST',
-                  url: '{% url "preview_vote" %}',
-                  data: form,
-                  dataType: 'json',
-                  success: function(response) {
-                      if (response.error) {
-                          var errmsg = '';
-                          var messages = response.message;
-                          for (i in messages) {
-                              errmsg += messages[i];
-                          }
-                          toastr.error(errmsg, "Preview Error")
-                      } else {
-                          $('#preview_modal').modal('show');
-                          $('#preview_body').html(response.list);
-                      }
-                  }
-              });
+    $('#preview').click(function (e) {
+      e.preventDefault();
+      var form = $('#ballotForm').serialize();
+      console.log(form);
+      if (form.search("&") < 0 || form == '') {
+        toastr.error('Bạn phải bỏ phiếu cho ít nhất một đại biểu', "Lỗi xem trước");
+      } else {
+        $.ajax({
+          type: 'POST',
+          url: '{% url "preview_vote" %}',
+          data: form,
+          dataType: 'json',
+          success: function (response) {
+            if (response.error) {
+              var errmsg = '';
+              var messages = response.message;
+              for (i in messages) {
+                errmsg += messages[i];
+              }
+              toastr.error(errmsg, "Preview Error")
+            } else {
+              $('#preview_modal').modal('show');
+              $('#preview_body').html(response.list);
+            }
           }
+        });
+      }
 
-      });
-      //ấn nút làm mới
-      $('#refresh').click(function(e) {
-        e.preventDefault();
-        //hỏi người dùng có muốn làm mới không       
-        window.location.reload();
-      });
+    });
+    //ấn nút làm mới
+    $('#refresh').click(function (e) {
+      e.preventDefault();
+      //hỏi người dùng có muốn làm mới không       
+      window.location.reload();
+    });
 
   });
   block();
-  disableF5(e);
-  
+ 
+
 </script>
 
 {% endblock custom_js %}
@@ -234,43 +230,45 @@ aria-hidden="true">&times;</button>
 
 <div class="modal fade" id="bio">
   <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title"><b><span class="candidate"></b></h4>
-            
-          </div>
-          <div class="modal-body">
-            <p id="plat_view"></p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Đóng</button>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><b><span class="candidate"></b></h4>
 
-          </div>
       </div>
+      <div class="modal-body">
+        <p id="plat_view"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i
+            class="fa fa-close"></i> Đóng</button>
+
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- Preview -->
 <div class="modal fade" id="preview_modal">
-  
+
   <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Xem Lại Bình Chọn</h4>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Xem Lại Bình Chọn</h4>
 
-          </div>
-          <div class="modal-body">
-            <div id="preview_body"></div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Đóng</button>
-
-          </div>
       </div>
+      <div class="modal-body">
+        <div id="preview_body"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i
+            class="fa fa-close"></i> Đóng</button>
+
+      </div>
+    </div>
   </div>
 </div>
 {% endblock modal %}

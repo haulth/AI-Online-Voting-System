@@ -1,27 +1,51 @@
 {% extends "root.html" %}
 {% load custom_filters %}
 {% block content %}
-
-
 <section class="content">
-<table class="table table-striped" id="example" style="padding-top: 10px;">
-    <thead>
-        <tr>
-            <th>Tên Cử Chi</th>
-            <th>Ngày</th>
-            <th>Giờ</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for attendance in attendances %}
-        <tr>
-            <td>{{ list_name|get_value:attendance.userid }}</td>
-            <td>{{ attendance.date|date:"d/m/Y" }}</td>
-            <td>{{ attendance.time_in|time:"H:i" }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="text-left mt-3">
+        <button class="btn btn-success float-left" id="export-button">Xuất dữ liệu</button>
+    </div>
+
+    <table class="table table-bordered ta" style="margin-top: 5px;" id="example">
+        
+        <thead class="text-light bg-primary">
+            <tr>
+                <th>Tên Cử Chi</th>
+                <th>Ngày</th>
+                <th>Giờ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>{{ list_name|get_value:attendance.userid }}</td>
+                <td>{{ attendance.date|date:"d/m/Y" }}</td>
+                <td>{{ attendance.time_in|time:"H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </section>
 
+{% block script %}
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+    document.getElementById('export-button').addEventListener('click', function () {
+        var table = document.getElementById('example');
+        var rows = Array.from(table.getElementsByTagName('tr'));
+
+        var data = rows.map(function (row) {
+            return Array.from(row.getElementsByTagName('td')).map(function (cell) {
+                return cell.innerText;
+            });
+        });
+
+        var worksheet = XLSX.utils.aoa_to_sheet(data);
+        var workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Dữ liệu');
+
+        XLSX.writeFile(workbook, 'nhật ký điểm danh.xlsx');
+    });
+</script>
+{% endblock %}
 {% endblock %}

@@ -1,39 +1,41 @@
 {% extends "voting/base.html" %}
 {% block content %}
-<style>
 
+
+<style>
     .notification-container {
         position: fixed;
         top: 20px;
         right: 20px;
         z-index: 9999;
     }
-    
 
-    
+
+
     .notification .close:hover {
         opacity: 1;
     }
-    
+
     .notification.alert-danger {
         background-color: #dc3545;
     }
-    
+
     .notification.alert-danger .close {
         color: #fff;
     }
-    
+
     .notification.alert-danger a {
         color: #fff;
         text-decoration: underline;
     }
+
     .notification-container {
         position: fixed;
         top: 20px;
         right: 20px;
         z-index: 9999;
     }
-    
+
     .notification {
         position: relative;
         display: flex;
@@ -44,68 +46,118 @@
         color: #fff;
         background-color: #dc3545;
     }
-    
+
     .notification .close {
         margin-left: 10px;
         color: #fff;
         opacity: 0.5;
     }
-    
+
     .notification .close:hover {
         opacity: 1;
-    }    
+    }
 
+    .rounded-container {
+
+        padding: 20px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .rounded-box {
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #fbfbfb;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+
+    button {
+        position: relative;    
+        border-radius: 10px !important;
+        border: none;
+        transition: all .3s ease-in-out;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    button::before {
+        content: "";
+        background-color: rgba(156, 154, 150, 0.483);
+        width: 0;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        transition: width 700ms ease-in-out;
+        display: inline-block;
+    }
+
+    button:hover::before {
+        width: 100%;
+    }
 </style>
-<div class="login-box">
-    <div class="login-logo">
-        <b>Hệ Thống Bỏ Phiếu</b>
-    </div>
 
-    <div class="login-box-body">
+
+
+<div class="rounded-container ">
+
+    <div class="rounded-box ">
+        <div class="text-center">
+            <h3><b>Hệ Thống Bỏ Phiếu</b></h3>
+        </div>
         <form action="{% url 'account_login' %}" method="POST">
             {% csrf_token %}
 
             <div class="form-group has-feedback">
-                <input type="text" class="form-control" name="email" placeholder="Email" required>
+                <input type="text" class="form-control rounded-box" name="email" placeholder="Email" required>
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
-                <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
+                <input type="password" class="form-control rounded-box" name="password" placeholder="Mật khẩu" required>
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
             <div class="row">
-                <div class="col-xs-12">
-                    <button type="submit" class="btn btn-success btn-block btn-flat" name="login"><i
+                <div class="col-xs-6">
+                    <button type="submit" class="btn btn-success btn-block btn-rounded btn-elevate" name="login"><i
                             class="fa fa-sign-in"></i> Đăng Nhập</button>
                 </div>
+
+                <div class="col-xs-6">
+                    <button id="capture-button" class="btn btn-danger btn-block btn-rounded btn-elevate"
+                        onclick="captureImage()"><i class="fa fa-video-camera" aria-hidden="true"></i> Face ID</button>
+                </div>
+
             </div>
         </form>
-    
-    
-        <div class="login-box-body">
+
+        <div class="">
             <!-- Add camera container and capture button -->
-            <div id="camera-container" style="position: relative;">
+            <div class="rounded-box" id="camera-container"
+                style="position: relative; max-width: 400px; margin-top: 5px;">
                 <video id="camera-video" style="width: 100%; height: auto;"></video>
-                <canvas id="camera-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: auto;"></canvas>
+                <canvas id="camera-canvas"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: auto;"></canvas>
             </div>
             <h5 id="hh"></h5>
-
-            <button id="capture-button" class="btn btn-warning btn-block btn-flat col-xs-12" onclick="captureImage()"><i class="fa fa-video-camera" aria-hidden="true"></i> Đăng Nhập bằng khuôn mặt</button>
-
         </div>
 
         {% if messages %}
-    <div id="notification-container" class="notification-container">
-        {% for message in messages %}
+        <div id="notification-container" class="notification-container">
+            {% for message in messages %}
             <div class="notification alert alert-danger" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 {{ message }}
             </div>
-        {% endfor %}
-    </div>
-{% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -129,18 +181,18 @@
                 //set icon cho thẻ với id =hh
                 document.getElementById('hh').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="font-size:24px"></i>';
                 document.getElementById('camera-container').style.display = 'block';
-            
+
 
                 //document.getElementById('capture-button').innerHTML = '<i class="fa fa-camera" aria-hidden="true"></i> Lấy ảnh này ';
                 // Capture an image from the video stream when the capture button is clicked
                 document.getElementById('capture-button').addEventListener('click', function () {
                     //nếu tê
                     // Pause the video
-                    
+
 
                     //ẩn khung camera đi
                     if (document.getElementById('camera-container').style.display == 'block') {
-                        
+
                         // btn capture-button đổi chữ thành đang đăng nhập ... và icon thành đang xử lý 
                         document.getElementById('capture-button').innerHTML = 'Đang đăng nhập...';
                         //icon đang xử lý
@@ -151,7 +203,7 @@
                         document.getElementById('hh').style.textAlign = 'center';
                         //set icon cho thẻ với id =hh
                         document.getElementById('hh').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="font-size:24px"></i>';
-                        
+
                         //document.getElementById('h
                     }
                     video.pause();
@@ -178,7 +230,7 @@
                         url: '{% url "account_login" %}',
                         //csrf_token
                         headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                        
+
                         data: { image_data: imageDataURL },
                         success: function (response) {
                             // Handle success
@@ -195,7 +247,7 @@
 
                         }
                     });
-    
+
                 });
             })
             .catch(function (error) {

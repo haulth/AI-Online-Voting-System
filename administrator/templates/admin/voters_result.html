@@ -1,63 +1,22 @@
 {% extends 'root.html' %}
 {% load static %}
 {% block content %}
-<script>
-    // Nếu time_left_str= 00:00:00 thì đổi chữ thành "Đã kết thúc"
-    var timeLeftStr = '{{ time_left_str }}';
-    console.log(timeLeftStr)
-    var timeLeftParts = timeLeftStr.split(':');
-    var hoursLeft = parseInt(timeLeftParts[0]);
-    var minutesLeft = parseInt(timeLeftParts[1]);
-    var secondsLeft = parseInt(timeLeftParts[2]);
-    var endTime = new Date();
-    endTime.setHours(endTime.getHours() + hoursLeft);
-    endTime.setMinutes(endTime.getMinutes() + minutesLeft);
-    endTime.setSeconds(endTime.getSeconds() + secondsLeft);
-
-    // Cập nhật đồng hồ countdown mỗi giây
-    var countdownInterval = setInterval(function() {
-        var now = new Date().getTime();
-        var timeLeft = endTime - now;
-
-        // Tính toán giờ, phút, giây còn lại
-        var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-        // Hiển thị đồng hồ countdown
-        var countdownElem = document.getElementById('countdown');
-        countdownElem.innerHTML = "Thời gian còn lại: " + hours + " giờ " + minutes + " phút " + seconds + " giây";
-
-        // Kiểm tra nếu thời gian còn lại đã hết, dừng đồng hồ countdown
-        if (timeLeft < 0) {
-            clearInterval(countdownInterval);
-            // Elements id = countdown-timer ẩn đi
-            countdownElem.innerHTML = "<span style='color: red;'>Bình chọn đã kết thúc</span>";
-        }
-    }, 1000);
-</script>
+<div class="text-left" style="margin-top: 2%; margin-left: 15px;">
+    <button class="btn btn-success float-left" id="export-button">Xuất dữ liệu</button>
+</div>
 <section class="content">
     <div class="row">
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header">
-                    <h4 class="box-title" style="text-align: center; color: blueviolet;">Tổng số lá phiếu: {{ voted_voters_count }}/{{ voters_count }}</h4>
+                    <h4 class="box-title" style="color: blueviolet;">Tổng số lá phiếu: {{ voted_voters_count }}/{{ voters_count }}</h4>
                 </div>
                 <div class="box-body">
-                    {% if  time_left > 0 %}
-                    <div class="text-center">
-                        <h6 class="box-title" style="color: rgb(62, 113, 206);">Thời gian bỏ phiếu: {{ time_left_str }}</h6>
-                        <p id="countdown" class="countdown-timer"></p>
-                    </div>
-                    {% else %}
-                    <div class="text-center">
-                        <h6 class="box-title" style="color: rgb(62, 113, 206);">Hết thời gian bỏ phiếu</h6>
-                    </div>
-                    {% endif %}
+                    
 
                     <div class="table-responsive">
-                        <table id="example1" class="table table-bordered table-hover table-striped">
-                            <thead class="table-head">
+                        <table id="example" class="table table-bordered ta">
+                            <thead class="text-light bg-primary">
                                 <tr>
                                     <th>Tên Đại Biểu</th>
                                     <th>Số Phiếu Đạt</th>
@@ -83,4 +42,26 @@
     </div>
 </section>
 
+
+{% block script %}
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+    document.getElementById('export-button').addEventListener('click', function () {
+        var table = document.getElementById('example');
+        var rows = Array.from(table.getElementsByTagName('tr'));
+
+        var data = rows.map(function (row) {
+            return Array.from(row.getElementsByTagName('td')).map(function (cell) {
+                return cell.innerText;
+            });
+        });
+
+        var worksheet = XLSX.utils.aoa_to_sheet(data);
+        var workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Dữ liệu');
+
+        XLSX.writeFile(workbook, 'Kết quả bầu cử.xlsx');
+    });
+</script>
+{% endblock %}
 {% endblock %}
