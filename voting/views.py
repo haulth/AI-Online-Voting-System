@@ -219,13 +219,13 @@ def dashboard(request):
 
         # Tính thời gian còn lại đến khi kết thúc bình chọn
         if vote_time_start > datetime.now():
-            print ('chua bat dau')
+        
             time_left_str = "-1"
             messages.error(request, "Bình chọn chưa bắt đầu")
             
         # Nếu thời gian bình chọn đã bắt đầu
         elif vote_time_start < datetime.now() < vote_time_end:
-            print ('da bat dau',vote_time_end - datetime.now())
+ 
             time_left = vote_time_end - datetime.now()
             hours, remainder = divmod(time_left.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
@@ -233,12 +233,12 @@ def dashboard(request):
             # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
             time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
         elif vote_time_end < datetime.now():
-            print ('da ket thuc')
+       
             time_left_str = "00:00:00"
             messages.error(request, "Bình chọn đã kết thúc")
             
         else:
-            print ('chua bat dau')
+
             time_left_str = "-1"
             messages.error(request, "Bình chọn chưa bắt đầu")
             
@@ -402,13 +402,13 @@ def show_ballot(request):
         # Tính thời gian còn lại đến khi kết thúc bình chọn
 
         if vote_time_start > datetime.now():
-            print ('chua bat dau')
+     
             time_left_str = "-1"
             messages.error(request, "Bình chọn chưa bắt đầu")
             
         # Nếu thời gian bình chọn đã bắt đầu
         elif vote_time_start < datetime.now() < vote_time_end:
-            print ('da bat dau',vote_time_end - datetime.now())
+    
             time_left = vote_time_end - datetime.now()
             hours, remainder = divmod(time_left.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
@@ -416,12 +416,12 @@ def show_ballot(request):
             # Trả về thời gian còn lại dưới dạng chuỗi "giờ:phút:giây"
             time_left_str = f"{int(time_left.days * 24 + hours)}:{minutes:02d}:{seconds:02d}"
         elif vote_time_end < datetime.now():
-            print ('da ket thuc')
+          
             time_left_str = "00:00:00"
             messages.error(request, "Bình chọn đã kết thúc")
             
         else:
-            print ('chua bat dau')
+  
             time_left_str = "-1"
             messages.error(request, "Bình chọn chưa bắt đầu")
             
