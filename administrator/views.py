@@ -633,7 +633,7 @@ def deleteVoter(request):
         except Exception as e:
             print(e)
         try:
-            image_path = os.path.join('static', 'image','qrcode', str(admin.get_id()),'.png')
+            image_path = os.path.join('static', 'image','qrcode', str(admin.get_id())+'.png')
             full_path = os.path.abspath(image_path)
             os.remove(full_path)
             

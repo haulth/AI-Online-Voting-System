@@ -256,8 +256,7 @@ def create_qrcode(text):
     save_path = os.path.join('static/images/qrcode', f'{text}.png')
     save_path = save_path.replace('\\', '/')  # Thay thế ký tự '\' bằng '/'
     file_path = os.path.join(settings.BASE_DIR, 'qrcode_path.txt')
-    with open(file_path, 'w') as file:
-        file.write('/'.join(save_path.split('/')[3:]))  # Ghi đường dẫn sau từ khóa "static" vào file
+
     qr_image.save(save_path)
 
     return save_path
