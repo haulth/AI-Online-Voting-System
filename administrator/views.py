@@ -134,33 +134,35 @@ def get_camera_index():
         return 0  # Nếu chỉ có 1 camera, chọn tham số 0
     
 def identified(request):
-    try:
-        cam=Camera_feed_identified()
-        gen = Gender_frame(cam)
-        if request.method == 'GET':
-            try:
-                return StreamingHttpResponse(gen, content_type="multipart/x-mixed-replace;boundary=frame")
-            except:
-                pass
-        elif request.method == 'POST':
+    # try:
+    cam=Camera_feed_identified()
+    gen = Gender_frame(cam)
+    if request.method == 'GET':
+        try:
+            print("thành công")
+            return StreamingHttpResponse(gen, content_type="multipart/x-mixed-replace;boundary=frame")
+            
+        except:
+            pass
+    elif request.method == 'POST':
 
-            if threading.active_count() > 0:
-                try:
-                    print(threading.active_count())
-                    gen.close()
-                    time.sleep(0.2)
-                    cam.__del__()
-                    messages.success(request, "Dừng thành công.")
-                    return HttpResponse("success")
-                except Exception as e:
-                    print("lỗi",str(e))
-                    pass
-            else:
-                messages.error(request, "Dừng không thành công.")
-                return HttpResponse("fail")
-    except Exception as e:
-        print("lỗi",str(e))
-        return HttpResponse("lõ rồi")
+        if threading.active_count() > 0:
+            try:
+                print(threading.active_count())
+                gen.close()
+                time.sleep(0.2)
+                cam.release()
+                messages.success(request, "Dừng thành công.")
+                return HttpResponse("success")
+            except Exception as e:
+                print("lỗi",str(e))
+                pass
+        else:
+            messages.error(request, "Dừng không thành công.")
+            return HttpResponse("fail")
+    # except Exception as e:
+    #     print("lỗi",str(e))
+    #     return HttpResponse("lõ rồi")
 
 def attendee_list(request):
     attendance = Attendance.objects.filter(date=datetime.now().date())

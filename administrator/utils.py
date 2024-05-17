@@ -21,7 +21,8 @@ import qrcode
 
 
 currentPythonFilePath = os.getcwd()
-        
+cam2='rtsp://admin:L288159E@192.168.159.115:554/cam/realmonitor?channel=1@subtype=1'
+cam1='rtsp://admin:L220C9F2@192.168.159.100:554/cam/realmonitor?channel=1@subtype=1'     
 #sử dụng .replace('\\','/') để thay đổi dấu / đg dẫn.
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
@@ -43,12 +44,14 @@ fakedetector = FacialRecognition.FakeDetector(0.2,0.2)
 def face_recognition(request):
     # Create named window
     cv2.namedWindow('Nhan Dien Khuon Mat')
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(cam1)
+    cap.set(cv2.CAP_PROP_FPS, 30)
+    fresh = FreshestFrame(cap)
     if not cap.isOpened():
         return HttpResponse("Khong the mo camera")
     while True:
         try:
-            ret, frame = cap.read()
+            ret, frame = fresh.read()
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             # Read barcodes from the image
             barcodes, imgbarcode = barcode_reader.read_barcodes(rgb)      
@@ -108,6 +111,7 @@ def calc_time(delta):
     return delta.total_seconds() / 3600
 
 #hàm lấy ảnh từ video cách mỗi 10s 1 lần và lưu vào thư mục static, đọc video từ dường dẫn
+     
 def get_frame(request,path_video):
     # Create named window
     cv2.namedWindow('Lay Anh Tu Video')
@@ -140,7 +144,9 @@ def face_detection(request):
         os.makedirs(folder_path)
         # messages.success(request, 'Tạo thư mục thành công')
     cv2.namedWindow('Phat Hien Khuon Mat')
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(cam1)
+    cap.set(cv2.CAP_PROP_FPS, 30)
+    fresh = FreshestFrame(cap)
     if not cap.isOpened():
         return HttpResponse("Khong the mo camera")
     count = 0
@@ -153,7 +159,7 @@ def face_detection(request):
             messages.success(request, 'Có dữ liệu mới được thêm vào.')
             break
         try:
-            ret, frame = cap.read()
+            ret, frame = fresh.read()
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             # Detect faces in the frame
             faces, _ = detector.get_faces(rgb)
@@ -189,7 +195,77 @@ def face_detection(request):
     cv2.destroyAllWindows()
     messages.success(request, 'Đăng ký tài khoản thành công.')
     return HttpResponse('success')
+class FreshestFrame(threading.Thread):
+	def __init__(self, capture, name='FreshestFrame'):
+		self.capture = capture
+		assert self.capture.isOpened()
 
+		# this lets the read() method block until there's a new frame
+		self.cond = threading.Condition()
+
+		# this allows us to stop the thread gracefully
+		self.running = False
+
+		# keeping the newest frame around
+		self.frame = None
+
+		# passing a sequence number allows read() to NOT block
+		# if the currently available one is exactly the one you ask for
+		self.latestnum = 0
+
+		# this is just for demo purposes		
+		self.callback = None
+		
+		super().__init__(name=name)
+		self.start()
+
+	def start(self):
+		self.running = True
+		super().start()
+
+	def release(self, timeout=None):
+		self.running = False
+		self.join(timeout=timeout)
+		self.capture.release()
+
+	def run(self):
+		counter = 0
+		while self.running:
+			# block for fresh frame
+			(rv, img) = self.capture.read()
+			assert rv
+			counter += 1
+
+			# publish the frame
+			with self.cond: # lock the condition for this operation
+				self.frame = img if rv else None
+				self.latestnum = counter
+				self.cond.notify_all()
+
+			if self.callback:
+				self.callback(img)
+
+	def read(self, wait=True, seqnumber=None, timeout=None):
+		# with no arguments (wait=True), it always blocks for a fresh frame
+		# with wait=False it returns the current frame immediately (polling)
+		# with a seqnumber, it blocks until that frame is available (or no wait at all)
+		# with timeout argument, may return an earlier frame;
+		#   may even be (0,None) if nothing received yet
+
+		with self.cond:
+			if wait:
+				if seqnumber is None:
+					seqnumber = self.latestnum+1
+				if seqnumber < 1:
+					seqnumber = 1
+				
+				rv = self.cond.wait_for(lambda: self.latestnum >= seqnumber, timeout=timeout)
+				if not rv:
+					return (self.latestnum, self.frame)
+
+			return (self.latestnum, self.frame)
+def callback(img):
+	cv2.imshow("realtime", img)
 def train(request):
     currentPythonFilePath = os.getcwd().replace('\\','/')
     print('Current Python File Path: ', currentPythonFilePath)
@@ -263,28 +339,30 @@ def create_qrcode(text):
 
 # The class Camera_feed_identified initializes a video feed and recognizes employees in the feed using
 # a dictionary of employee codes and names.
+    
 class Camera_feed_identified():
     def __init__(self):
-        self.video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        self.video = cv2.VideoCapture(cam1)
+        self.video.set(cv2.CAP_PROP_FPS, 30)
         self.is_running = True
-        
-        (self.grabbed, self.frame) = self.video.read()
+        self.fresh =FreshestFrame(self.video)
+        (self.grabbed, self.frame) = self.fresh.read()
         self.recognized_records = {}
-        # 3 phút (đơn vị: giây)
         self.expiration_time = 24 * 60  
         ids = User.objects.all()
+        print(ids)
         self.voters_dict = {}
         for id in ids:
             self.voters_dict[id.get_id()] = id.get_full_name()
         #threading dung de chay song song voi chuong trinh chinh
-        self.th =threading.Thread(target=self.update, args=())
+        self.th = threading.Thread(target=self.update, args=())
         self.th.setDaemon(True)
         self.th.start()
 
-    def __del__(self):
-        self.is_running = False
-        self.th.join()   
-        self.video.release()
+    def release(self, timeout=None):
+        self.running = False
+        self.join(timeout=timeout)
+        self.fresh.release()
 
     def get_name(self, id):
         return self.voters_dict.get(id)
