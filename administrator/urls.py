@@ -52,5 +52,6 @@ urlpatterns = [
     path('list_attendance/', views.list_attendance, name='list_attendance'),
     path('upload_images/', views.upload_images, name="upload_images"),
     path('create_folder/', views.create_folder, name='create_folder'),
-    path('register/', views.account_register, name="account_register"),
+    path('register/', views.account_register, name="account_register"), 
+    path('import_csv/', views.import_csv, name='import_csv'),
 ]

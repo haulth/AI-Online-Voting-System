@@ -1,149 +1,175 @@
-{% extends "root.html" %}
+{% extends 'root.html' %}
 {% block content %}
-<div class="container mt-4">
-  <div class="card">
-    <div class="card-body">
+  <div class="container mt-4">
+    <div class="card">
+      <div class="card-body">
+        <form action="{% url 'account_register' %}" method="POST" name="signupForm" id="signup-form">
+          {% csrf_token %}
 
-      <form action="{% url 'account_register' %}" method="POST" name="signupForm" id="signup-form">
-        {% csrf_token %}
+          <div class="modal-body d-flex justify-content-center">
+            <div>
+              {% for field in form1 %}
+                <div class="form-group">
+                  {{ field.label_tag }}
+                  {{ field }}
+                  <span class="text-danger">{{ field.errors }}</span>
+                </div>
+              {% endfor %}
 
-        <div class="modal-body d-flex justify-content-center">
-          <div>
-            {% for field in form1 %}
-            <div class="form-group">
-              {{field.label_tag}}
-              {{field}}
-              <span class="text-danger">{{field.errors}}</span>
-            </div>
-            {% endfor %}
+              {% for field in form2 %}
+                <div class="form-group">
+                  {{ field.label_tag }}
+                  {{ field }}
+                  <span class="text-danger">{{ field.errors }}</span>
+                </div>
+              {% endfor %}
 
-            {% for field in form2 %}
-            <div class="form-group">
-              {{field.label_tag}}
-              {{field}}
-              <span class="text-danger">{{field.errors}}</span>
-            </div>
-            {% endfor %}
+              <p id="empcode" name="empcode" data-user-id="{{ user_id }}"></p>
 
-            <p id="empcode" name="empcode" data-user-id="{{ user_id }}"></p>
-
-            <div class="row">
-              <div class="col-md-3 mb-2">
-                <button type="submit" class="btn btn-primary btn-block" name="login"><i class="fa fa-user-plus"></i>
-                  Đăng Ký</button>
-              </div>
-              <div class="col-md-5">
-                <div class="row">
-                  <div class="col-md-5 mb-2" id="upload-button">
-                    <a class="btn btn-success btn-block" id="upload-image-btn" onclick="uploadImage();"
-                      style="display: none;"><i class="fas fa-cloud-upload-alt"></i> Upload ảnh</a>
-
-                  </div>
-                  <div class="col-md-5 mb-2" id="camera-button">
-                    <a class="btn btn-danger btn-block" id="camera-btn"  style="display: none;"><i
-                        class="fa fas fa-camera"></i> Camera</a>
+              <div class="row">
+                <div class="col-md-3 mb-2">
+                  <button type="submit" class="btn btn-primary btn-block" name="login">
+                    <i class="fa fa-user-plus"></i>
+                    Đăng Ký
+                  </button>
+                </div>
+                <div class="col-md-5">
+                  <div class="row">
+                    <div class="col-md-5 mb-2" id="upload-button">
+                      <a class="btn btn-success btn-block" id="upload-image-btn" onclick="uploadImage();" style="display: none;"><i class="fas fa-cloud-upload-alt"></i> Upload ảnh</a>
+                    </div>
+                    <div class="col-md-5 mb-2" id="camera-button">
+                      <a class="btn btn-danger btn-block" id="camera-btn" style="display: none;"><i class="fa fas fa-camera"></i> Camera</a>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            
+        </form>
+
+        <hr />
+
+            <h2>Thêm file csv để tạo tài khoản</h2>
+            <form action="{% url 'import_csv' %}" method="POST" enctype="multipart/form-data" id="csvUploadForm">
+              {% csrf_token %}
+              <input type="file" name="csv_file" accept=".csv" />
+              <hr/>
+              <button type="submit">Import CSV</button>
+            </form>
           </div>
-        </div>
-      </form>
-      <div id="success-message" class="mt-3 text-success" style="display: none;"></div>
+        <div id="success-message" class="mt-3 text-success" style="display: none;"></div>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-  let user_id; // Khai báo biến user_id trong phạm vi toàn cục
-  let uploadClicked = false;
-  let cameraClicked = false;
-
-  function uploadImage() {
-    const url = `/administrator/create_folder/?name=${user_id}`;
-    fetch(url)
-      .then(response => {
-        if (response.ok) {
-
-          return response.text();
-
-        } else {
-          // throw new Error('Có lỗi xảy ra!');
-        }
-      })
-      .then(data => {
-        
-        document.body.innerHTML = data;
-
-      })
-      .catch(error => {
-        console.error('Lỗi:', error);
-        // alert('Có lỗi xảy ra!');
-      });
-  }
-
-
-  function camera() {
-
-    const url = `/administrator/face_detection/?name=${user_id}`;
-
-    fetch(url)
-      .then(response => {
-        if (response.ok) {
-          window.location.href = 'http://localhost:8000/administrator/register/';
-        }
-      })
-      .catch(error => {
-        console.error('Lỗi trong quá trình gửi yêu cầu:', error);
-      });
-  }
-
-  $(document).ready(function () {
-    $('#signup-form').submit(function (event) {
-      event.preventDefault();
-
+  <script>
+    let user_id // Khai báo biến user_id trong phạm vi toàn cục
+    let uploadClicked = false
+    let cameraClicked = false
+    
+    function uploadImage() {
+      const url = `/administrator/create_folder/?name=${user_id}`
+      fetch(url)
+        .then((response) => {
+          if (response.ok) {
+            return response.text()
+          } else {
+            // throw new Error('Có lỗi xảy ra!');
+          }
+        })
+        .then((data) => {
+          document.body.innerHTML = data
+        })
+        .catch((error) => {
+          console.error('Lỗi:', error)
+          // alert('Có lỗi xảy ra!');
+        })
+    }
+    $('#csvUploadForm').submit(function (event) {
+      event.preventDefault()
+    
+      var formData = new FormData(this)
+    
       $.ajax({
         url: $(this).attr('action'),
-        type: $(this).attr('method'),
-        data: $(this).serialize(),
-        dataType: 'json',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
         success: function (response) {
           if (response.success) {
-            user_id = response.user_id;
-            $('#empcode').text(user_id);
-            alert('Bạn cần chọn nút upload hoặc camera để hoàn thành thủ tục đăng ký.');
-            showButtons();
-
-            $('#upload-image-btn').click(function () {
-              uploadClicked = true;
-              uploadImage(user_id);
-            });
-
-            $('#camera-btn').click(function () {
-              cameraClicked = true;
-              camera(user_id);
-            });
+            alert('Import CSV thành công')
           } else {
-            // Xử lý phản hồi lỗi
-            // ...
+            alert('Có lỗi xảy ra: ' + response.errors)
           }
         },
         error: function () {
-          // Xử lý lỗi AJAX
-          // ...
+          alert('Có lỗi xảy ra trong quá trình import CSV')
         }
-      });
-    });
-
-    function showButtons() {
-      const uploadButton = document.getElementById('upload-image-btn');
-      const cameraButton = document.getElementById('camera-btn');
-
-      uploadButton.style.display = 'inline-block';
-      cameraButton.style.display = 'inline-block';
+      })
+    })
+    
+    function camera() {
+      const url = `/administrator/face_detection/?name=${user_id}`
+    
+      fetch(url)
+        .then((response) => {
+          if (response.ok) {
+            window.location.href = 'http://localhost:8000/administrator/register/'
+          }
+        })
+        .catch((error) => {
+          console.error('Lỗi trong quá trình gửi yêu cầu:', error)
+        })
     }
-  });
-</script>
-{% endblock content %}
+    
+    $(document).ready(function () {
+      $('#signup-form').submit(function (event) {
+        event.preventDefault()
+    
+        $.ajax({
+          url: $(this).attr('action'),
+          type: $(this).attr('method'),
+          data: $(this).serialize(),
+          dataType: 'json',
+          success: function (response) {
+            if (response.success) {
+              user_id = response.user_id
+              $('#empcode').text(user_id)
+              alert('Bạn cần chọn nút upload hoặc camera để hoàn thành thủ tục đăng ký.')
+              showButtons()
+    
+              $('#upload-image-btn').click(function () {
+                uploadClicked = true
+                uploadImage(user_id)
+              })
+    
+              $('#camera-btn').click(function () {
+                cameraClicked = true
+                camera(user_id)
+              })
+            } else {
+              // Xử lý phản hồi lỗi
+              // ...
+            }
+          },
+          error: function () {
+            // Xử lý lỗi AJAX
+            // ...
+          }
+        })
+      })
+    
+      function showButtons() {
+        const uploadButton = document.getElementById('upload-image-btn')
+        const cameraButton = document.getElementById('camera-btn')
+    
+        uploadButton.style.display = 'inline-block'
+        cameraButton.style.display = 'inline-block'
+      }
+    })
+  </script>
+{% endblock %}
