@@ -39,6 +39,36 @@ def list_attendance(request):
 
     return render(request, "admin/list_attendance.html", context)
 
+<<<<<<< HEAD
+=======
+
+# def import_csv_data(csv_file):
+#     data = csv.reader(csv_file.read().decode('utf-8').splitlines())
+
+#     try:
+#         headers = next(data)  # Bỏ qua dòng tiêu đề
+#     except StopIteration:
+#         raise ValueError("File CSV rỗng hoặc không hợp lệ")
+
+#     for row in data:
+#         if len(row) != 5:
+#             raise ValueError("Số cột trong file CSV không đúng")
+
+#         ho, ten, email, password, sdt = row
+#         username = ten  # Sử dụng email làm username
+
+#         if not User.objects.filter(username=username).exists():
+#             user = User.objects.create_user(
+#                 username=username,
+#                 email=email,
+#                 password=password,
+#                 first_name=ho,
+#                 last_name=ten
+#             )
+#             Voter.objects.create(admin=user, phone_number=sdt)
+
+
+>>>>>>> 45b7fa4cca34c31607dfb7b1421630e6892a42a4
 def import_csv(request):
     if request.method == "POST" and "csv_file" in request.FILES:
         csv_file = request.FILES["csv_file"]
@@ -52,6 +82,44 @@ def import_csv(request):
     )
 
 
+<<<<<<< HEAD
+=======
+# def import_csv_data(csv_file):
+#     data = csv.reader(csv_file.read().decode('utf-8').splitlines())
+
+#     try:
+#         headers = next(data)  # Bỏ qua dòng tiêu đề
+#     except StopIteration:
+#         raise ValueError("File CSV rỗng hoặc không hợp lệ")
+
+#     for row in data:
+#         if len(row) != 5:
+#             raise ValueError("Số cột trong file CSV không đúng")
+
+#         ho, ten, email, password, sdt = row
+
+
+#         if not CustomUser.objects.filter(email=email).exists():
+#             user = CustomUser.objects.create_user(
+#                 email=email,
+#                 password=password,
+#                 first_name=ho,
+#                 last_name=ten
+#             )
+#             voter = Voter.objects.create(admin=user, phone_number=sdt)
+#             # Tạo form với dữ liệu từ user và voter
+#             userForm = CustomUserForm(instance=user)
+#             voterForm = VoterForm(instance=voter)
+#             # Kiểm tra và lưu thông tin nếu hợp lệ
+#             if userForm.is_valid() and voterForm.is_valid():
+#                 userForm.save()
+#                 voterForm.save()
+#             else:
+#                 # Xóa người dùng và bỏ phiếu nếu form không hợp lệ
+#                 user.delete()
+#                 voter.delete()
+#                 raise ValueError("Dữ liệu từ file CSV không hợp lệ")
+>>>>>>> 45b7fa4cca34c31607dfb7b1421630e6892a42a4
 def import_csv_data(csv_file):
     data = csv.reader(csv_file.read().decode("utf-8").splitlines())
 
@@ -69,7 +137,11 @@ def import_csv_data(csv_file):
         if not CustomUser.objects.filter(email=email).exists():
             # Tạo thư mục dựa trên giá trị của cột "tên"
             folder_name = ten.replace(" ", "_")  # Thay khoảng trắng bằng dấu gạch dưới
+<<<<<<< HEAD
             folder_path = os.path.join("./static/avatars/", folder_name)
+=======
+            folder_path = os.path.join("./static/data/", folder_name)
+>>>>>>> 45b7fa4cca34c31607dfb7b1421630e6892a42a4
             os.makedirs(folder_path, exist_ok=True)  # Tạo thư mục nếu nó chưa tồn tại
             image_name = f"{email}_avatar.jpg"  # Tên tệp ảnh sẽ lưu
             image_path = os.path.join(folder_path, image_name)  # Đường dẫn đầy đủ đến tệp ảnh
@@ -104,7 +176,11 @@ def import_csv_data(csv_file):
                 error_message = response_data.get("errors", "Unknown error")
                 raise ValueError(f"Không thể đăng ký tài khoản cho email: {email}. Lỗi: {error_message}")
 
+<<<<<<< HEAD
 #dang ky tai khoan tu dong
+=======
+#
+>>>>>>> 45b7fa4cca34c31607dfb7b1421630e6892a42a4
 def account_register_auto(email, password, first_name, last_name, phone_number, image_path):
     if not CustomUser.objects.filter(email=email).exists():
         user_data = {
@@ -124,8 +200,15 @@ def account_register_auto(email, password, first_name, last_name, phone_number, 
             user = userForm.save(commit=False)
             user.set_password(password)  # Đặt mật khẩu cho người dùng
             user.save()
+<<<<<<< HEAD
             user_id = user.id
             image_folder_path = f"./static/data/{user_id}/"
+=======
+
+            # Lưu ảnh vào thư mục mà không cần thuộc tính `avatar`
+            user_id = user.id
+            image_folder_path = f"./static/avatars/{user_id}/"
+>>>>>>> 45b7fa4cca34c31607dfb7b1421630e6892a42a4
             os.makedirs(image_folder_path, exist_ok=True)
             image_full_path = os.path.join(image_folder_path, f"{user_id}_avatar.jpg")
             with open(image_path, "rb") as img_file:
@@ -396,7 +479,11 @@ class PrintView(PDFView):
             print(
                 "Candidate Data For  ", str(position.name), " = ", str(candidate_data)
             )
+<<<<<<< HEAD
             
+=======
+            # ! Check Winner
+>>>>>>> 45b7fa4cca34c31607dfb7b1421630e6892a42a4
             if len(candidate_data) < 1:
                 winner = "Vị trí chưa có ứng viên"
             else:

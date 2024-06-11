@@ -22,7 +22,11 @@ import qrcode
 
 currentPythonFilePath = os.getcwd()
 cam2='rtsp://admin:L288159E@192.168.159.115:554/cam/realmonitor?channel=1@subtype=1'
+<<<<<<< HEAD
 cam1=0    
+=======
+cam1='rtsp://admin:L220C9F2@192.168.159.100:554/cam/realmonitor?channel=1@subtype=1'     
+>>>>>>> 45b7fa4cca34c31607dfb7b1421630e6892a42a4
 #sử dụng .replace('\\','/') để thay đổi dấu / đg dẫn.
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
