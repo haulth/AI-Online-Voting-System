@@ -9,7 +9,7 @@ class EmployeeDetail(models.Model):
     gender=models.CharField(max_length=10)
     def __str__(self): 
         return self.user.username
-    
+       
 class Attendance(models.Model):
 
     userid = models.CharField(max_length=10)

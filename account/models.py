@@ -45,5 +45,7 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.last_name + " " + self.first_name
+    def get_id(self):
+        return self.id
     
     

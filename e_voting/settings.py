@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'voting.apps.VotingConfig',
     'administrator.apps.AdministratorConfig',
     
-    
 ]
 
 MIDDLEWARE = [

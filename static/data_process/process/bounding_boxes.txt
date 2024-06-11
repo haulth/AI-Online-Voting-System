@@ -1,0 +1,100 @@
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_36_Pro.png 574 338 1121 1045
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_52_Pro.png 794 443 1271 1079
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_47_Pro.png 627 342 1156 1001
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_52_Pro.png 588 431 1126 1063
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_39_Pro.png 889 326 1407 1031
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_42_Pro.png 591 467 1168 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_49_Pro.png 734 295 1276 1014
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_40_Pro.png 764 224 1254 754
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_44_Pro.png 750 252 1273 945
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_49_Pro.png 737 295 1276 1011
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_44_Pro.png 693 280 1196 956
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_52_Pro.png 571 464 1139 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_52_Pro.png 585 392 1059 1065
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_49_Pro.png 730 288 1244 1012
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_47_Pro.png 648 314 1150 984
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_45_Pro.png 846 286 1333 962
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_42_Pro.png 739 472 1294 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_36_Pro.png 789 339 1315 1056
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_45_Pro.png 845 286 1337 960
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_42_Pro.png 732 479 1302 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_42_Pro.png 700 475 1247 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_38_Pro.png 578 421 1053 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_40_Pro.png 663 224 1134 757
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_47_Pro.png 601 281 1105 968
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_52_Pro.png 587 433 1126 1069
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_39_Pro.png 889 326 1406 1029
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_45_Pro.png 822 331 1301 1004
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_38_Pro.png 575 418 1050 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_38_Pro.png 867 431 1306 1071
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_39_Pro.png 917 255 1414 921
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_36_Pro.png 790 333 1317 1053
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_40_Pro.png 772 237 1248 781
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_39_Pro.png 878 371 1403 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_40_Pro.png 767 210 1246 771
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_47_Pro.png 649 327 1130 981
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\original_WIN_20240610_15_07_44_Pro.png 749 256 1274 947
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_39_Pro.png 477 321 1026 1078
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_42_Pro.png 718 464 1298 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_36_Pro.png 742 366 1281 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_36_Pro.png 796 299 1365 1028
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_49_Pro.png 755 303 1290 963
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_44_Pro.png 657 275 1179 942
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_right_WIN_20240610_15_07_38_Pro.png 553 371 998 1025
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_45_Pro.png 845 230 1362 900
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_49_Pro.png 638 281 1168 1012
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\noise_WIN_20240610_15_07_40_Pro.png 767 234 1241 771
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_38_Pro.png 575 464 1098 1080
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_45_Pro.png 574 281 1081 943
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\flipped_WIN_20240610_15_07_47_Pro.png 782 326 1265 994
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/205\rotated_left_WIN_20240610_15_07_44_Pro.png 753 269 1274 924
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_c2b24b720029a377fa38.png 199 116 423 406
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_c2b24b720029a377fa38.png 196 117 427 418
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_c2b24b720029a377fa38 - Copy (3).png 199 116 423 406
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_c2b24b720029a377fa38 - Copy.png 195 119 424 412
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_c2b24b720029a377fa38 - Copy (2).png 199 116 423 406
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_eb1f2fc26499c7c79e88 (3) - Copy.png 95 40 262 248
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_eb1f2fc26499c7c79e88 (2) - Copy.png 87 44 255 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_eb1f2fc26499c7c79e88 (3) - Copy.png 72 51 244 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_c2b24b720029a377fa38 - Copy (4).png 213 121 432 411
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_eb1f2fc26499c7c79e88 (1).png 85 40 255 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_c2b24b720029a377fa38 - Copy (4).png 196 117 427 418
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_eb1f2fc26499c7c79e88 (3) - Copy.png 104 40 267 245
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_eb1f2fc26499c7c79e88 (1) - Copy.png 72 51 244 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_eb1f2fc26499c7c79e88 (4) - Copy.png 95 40 262 248
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_c2b24b720029a377fa38 - Copy (3).png 199 107 439 417
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_eb1f2fc26499c7c79e88 (1).png 95 40 262 248
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_c2b24b720029a377fa38.png 199 107 439 417
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_c2b24b720029a377fa38 - Copy.png 199 116 423 406
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_eb1f2fc26499c7c79e88 (2) - Copy.png 95 40 262 248
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_eb1f2fc26499c7c79e88 (1) - Copy.png 85 40 255 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_c2b24b720029a377fa38 - Copy (3).png 196 117 427 418
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_eb1f2fc26499c7c79e88 (4) - Copy.png 104 40 267 245
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_eb1f2fc26499c7c79e88 (1).png 72 51 244 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_eb1f2fc26499c7c79e88 (1).png 90 47 253 242
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_eb1f2fc26499c7c79e88 (4) - Copy.png 72 51 244 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_eb1f2fc26499c7c79e88 (1).png 104 40 267 245
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_c2b24b720029a377fa38 - Copy (4).png 199 107 439 417
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_eb1f2fc26499c7c79e88 (2) - Copy.png 72 51 244 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_eb1f2fc26499c7c79e88 (1) - Copy.png 95 40 262 248
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_c2b24b720029a377fa38 - Copy (4).png 201 124 421 417
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_eb1f2fc26499c7c79e88 (3) - Copy.png 86 42 254 242
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_eb1f2fc26499c7c79e88 (2) - Copy.png 85 40 255 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_c2b24b720029a377fa38.png 213 121 432 411
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_c2b24b720029a377fa38 - Copy (2).png 213 121 432 411
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_eb1f2fc26499c7c79e88 (4) - Copy.png 85 40 255 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_c2b24b720029a377fa38 - Copy (3).png 213 121 432 411
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_c2b24b720029a377fa38 - Copy (3).png 200 125 421 416
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_c2b24b720029a377fa38 - Copy (2).png 197 121 424 413
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_c2b24b720029a377fa38 - Copy.png 199 107 439 417
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\flipped_c2b24b720029a377fa38 - Copy.png 213 121 432 411
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_left_c2b24b720029a377fa38 - Copy (2).png 199 107 439 417
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_c2b24b720029a377fa38 - Copy.png 196 117 427 418
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_eb1f2fc26499c7c79e88 (2) - Copy.png 104 40 267 245
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_c2b24b720029a377fa38.png 196 120 425 413
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_eb1f2fc26499c7c79e88 (3) - Copy.png 85 40 255 241
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_c2b24b720029a377fa38 - Copy (4).png 199 116 423 406
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\rotated_right_eb1f2fc26499c7c79e88 (1) - Copy.png 104 40 267 245
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_eb1f2fc26499c7c79e88 (4) - Copy.png 87 46 254 246
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\original_c2b24b720029a377fa38 - Copy (2).png 196 117 427 418
+C:/Users/nguye/Downloads/AI-Online-Voting-System-main/static/data_process/process/206\noise_eb1f2fc26499c7c79e88 (1) - Copy.png 88 42 256 240
